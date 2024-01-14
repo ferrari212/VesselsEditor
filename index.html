@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive 3D Block Creator</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div id="block-interface" class="flex flex-col p-4 space-y-2.5">
+      <button
+        id="create-block"
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-2.5"
+      >
+        Create Block
+      </button>
+      <button
+        id="delete-block"
+        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-2.5"
+      >
+        Delete Block
+      </button>
+    </div>
+    <div
+      id="parameters"
+      class="flex flex-col p-4 space-y-2.5 bg-slate-200 rounded"
+    >
+      <h1 class="font-bold text-lg">Parameters</h1>
+      <h2 class="text-sm italic">Dimensions</h2>
+      <input
+        type="number"
+        step="0.1"
+        id="height"
+        placeholder="Height"
+        class="input input-bordered input-primary w-32 max-w-xs mb-2.5"
+      />
+      <input
+        type="number"
+        step="0.1"
+        id="length"
+        placeholder="Length"
+        class="input input-bordered input-primary w-32 max-w-xs mb-2.5"
+      />
+      <input
+        type="number"
+        step="0.1"
+        id="breadth"
+        placeholder="Breadth"
+        class="input input-bordered input-primary w-32 max-w-xs"
+      />
+      <!-- Add more input fields for coordinates and rotation as needed -->
+      <h2 class="text-sm italic">Positions</h2>
+      <input
+        type="number"
+        step="0.1"
+        id="posX"
+        placeholder="posX"
+        class="input input-bordered input-primary w-32 max-w-xs mb-2.5"
+      />
+      <input
+        type="number"
+        step="0.1"
+        id="posY"
+        placeholder="posY"
+        class="input input-bordered input-primary w-32 max-w-xs mb-2.5"
+      />
+      <input
+        type="number"
+        step="0.1"
+        id="posZ"
+        placeholder="posZ"
+        class="input input-bordered input-primary w-32 max-w-xs"
+      />
+      <!-- Add more input fields for coordinates and rotation as needed -->
+    </div>
+    <div id="canvas"></div>
+
+    <!-- Three.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="./js/script.js" type="module"></script>
+  </body>
+</html>
