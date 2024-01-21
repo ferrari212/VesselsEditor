@@ -9,12 +9,18 @@
   </head>
   <body>
     <div id="block-interface" class="flex flex-col p-4 space-y-2.5">
+      <div
+        id="errorContainer"
+        class="fixed bottom-10 left-1/2 transform -translate-x-1/2 space-y-2"
+      ></div>
+
       <button
         id="create-block"
         class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-2.5"
       >
         Create Block
       </button>
+
       <button
         id="delete-block"
         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-2.5"
