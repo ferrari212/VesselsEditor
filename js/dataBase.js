@@ -1,14 +1,13 @@
 // This function creates a start generic ship to be used in the library
 // The object contains the minimum acceptable object to make the Vessel function works
-
-
-const shipSpec = {
+// this ship spec must be modified to accommodate the ship State class.
+let state = {
     "attributes": {},
     "designState": {},
 } 
 
 // Defining Design States
-shipSpec["designState"] = {
+state["designState"] = {
     "calculationParameters": {
         "LWL_design": 22.5,
         "BWL": 10,
@@ -33,7 +32,7 @@ shipSpec["designState"] = {
 
 
 // Defining Structure
-shipSpec["structure"] = {
+state["structure"] = {
     "hull": {
         "attributes": {
             "LOA": 22.5,
@@ -52,14 +51,14 @@ shipSpec["structure"] = {
 }
 
 // Defining specifications
-shipSpec["baseObjects"] = [
+state["baseObjects"] = [
     {
         "id": "Cargo", 
         "affiliations": {},
         "boxDimensions": {
-            "length": 10.25,
-            "breadth": 9,
-            "height": 10
+            "length": 10.0,
+            "breadth": 10.0,
+            "height": 10.0
         },
         "capabilities": {},
         "baseState": {
@@ -83,20 +82,5 @@ shipSpec["baseObjects"] = [
     }
 ]
 
-// Defining derived objects
-shipSpec["derivedObjects"] = [
-    {
-        "id": "Tank1", 
-        "baseObject": "Cargo", 
-        "affiliations": {
-            "group": "cargo tanks",
-        },
-        "referenceState": {
-            "xCentre": 10.0,
-            "yCentre": 0.0,
-            "zBase": 0.0
-        },
-    }
-]
 
-export default shipSpec
+export default state

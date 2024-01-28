@@ -11,7 +11,10 @@ import renderRayCaster from "../libs/3D_engine/renderRayCaster.js"
 import * as Vessel from "../libs/vessel.module.min.js";
 
 // Importing the minimum database that represents a ship
-import shipSpec from "./dataBase.js";
+import state from "./dataBase.js";
+
+// Import find compartment
+import { findCompartmentName } from "./findAddedPosition.js"
 
 // Importing Ship3D library
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
@@ -20,41 +23,36 @@ import { Ship3D } from "../libs/3D_engine/Ship3D.js";
 let scene, camera, renderer, block;
 
 // Raycaster Parameters
-let intersected, mouse, elementClicked;
+let intersected, mouse, elementClicked, parametersMenu;
 
 // Vessels.js state instances
-let ship, state
+let ship, ship3D
 
-init();
-animate();
+// Default derived objects
+const defaultCompartment = {}
+defaultCompartment["derivedObjects"] = [
+    {
+        "id": "Tank_1", 
+        "baseObject": "Cargo", 
+        "affiliations": {
+            "group": "cargo tanks",
+        },
+        "referenceState": {
+            "xCentre": 5.0,
+            "yCentre": 0.0,
+            "zBase": 0.0
+        },
+    }
+]
 
 function init() {
 
     // Setting up Three.js scene, camera, and renderer to the previous defined variables
     ({ scene, camera, renderer } = setUpThreeJs());
-    
-    // Create a sample block
-    // const geometry = new THREE.BoxGeometry();
-    // const material = new THREE.MeshBasicMaterial({ color: 0x006600 });
-    // block = new THREE.Mesh(geometry, material);
-    // scene.add(block);
 
-    // Use Vessel.js to create a ship instance
-    // const ship_two = new Vessel.Ship("../assets/db/barge.json"); 
-    // ship_two.createShip3D(
-    //     {
-    //       stlPath: ".",
-    //       // upperColor: 0x33aa33,
-    //       // lowerColor: 0xaa3333,
-    //       // hullOpacity: 1,
-    //       // deckOpacity: 1,
-    //       // objectOpacity: 1,
-    //     },
-    //     Ship3D
-    //   );
-    // scene.add(ship_two.ship3D)
-    const ship = new Vessel.Ship(shipSpec);
-    const ship3D = new Ship3D(ship, {
+    Object.assign(state, defaultCompartment)
+    ship = new Vessel.Ship(state);
+    ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
         lowerColor: 0xaa3333,
         hullOpacity: 1,
@@ -62,6 +60,9 @@ function init() {
         objectOpacity: 1
     });
     scene.add(ship3D);
+
+    console.log(state);
+    console.log(ship);
 
     // Set up the camera
     camera.position.set( 15, 15, 15 );
@@ -105,7 +106,6 @@ function animate() {
     // Apply the function RayCaster only if the element clicked is undefined
     if (elementClicked === undefined) {
         intersected = renderRayCaster(mouse, camera, scene, intersected)
-        console.log(intersected);
     }
 
     if (intersected.name === undefined || elementClicked) {
@@ -156,14 +156,13 @@ function onMouseDoubleClick (event) {
     
     }
 
-    h.value = 0.0
-    l.value = 0.0
-    b.value = 0.0
-    posX.value = 0.0
-    posY.value = 0.0
-    posZ.value = 0.0
-
-    elementClicked = undefined
+    h.value = ""
+    l.value = ""
+    b.value = ""
+    posX.value = ""
+    posY.value = ""
+    posZ.value = ""
+    elementClicked = ""
 
 }
 
@@ -195,14 +194,75 @@ document.getElementById('create-block').addEventListener('click', () => {
     // Function to create blocks
     console.log("Created the block");
 
+    // Remove the Ship 3D
+    scene.remove(ship3D)
+
+    const tank_name = findCompartmentName(state)
+    let compartment = JSON.parse(JSON.stringify(defaultCompartment))
+    compartment.derivedObjects[0].id = tank_name
+    compartment.derivedObjects[0].referenceState.xCentre = 20.0
+    state.derivedObjects.push(compartment.derivedObjects[0])
+    ship = new Vessel.Ship(state);
+    ship3D = new Ship3D(ship, {
+        upperColor: 0x33aa33,
+        lowerColor: 0xaa3333,
+        hullOpacity: 1,
+        deckOpacity: 1,
+        objectOpacity: 1
+    });
+    scene.add(ship3D);
+
     showMessage("Error: The function to ADD the block is not set yet");
 });
 
 document.getElementById('delete-block').addEventListener('click', () => {
-    // Function to delete blocks
-    console.log("Deleted the block");
+    
+    
+    if ( !elementClicked ) {
+        showMessage("Error: The function to DELETE the block is not set yet");
+        return
+    }    
+    
+    // Remove the Ship 3D
+    scene.remove(ship3D)
+  
+    // Delete the derived object
+    ship.deleteDerivedObjectById(elementClicked)
 
-    showMessage("Error: The function to DELETE the block is not set yet");
+    // Reconstruct the Ship3D
+    ship3D = new Ship3D(ship, {
+        upperColor: 0x33aa33,
+        lowerColor: 0xaa3333,
+        hullOpacity: 1,
+        deckOpacity: 1,
+        objectOpacity: 1
+    });
+
+    // Maintain the derived objects that does not have the same element clicked
+    state.derivedObjects = state.derivedObjects.filter(obj => obj.id != elementClicked)
+    // Add once again the Ship3D in the scene
+    scene.add(ship3D);
+
+    const h = document.getElementById('height')
+    const l = document.getElementById('length')
+    const b = document.getElementById('breadth')
+    const posX = document.getElementById('posX')
+    const posY = document.getElementById('posY')
+    const posZ = document.getElementById('posZ')
+
+    // Delete Elements
+    h.value = ""
+    l.value = ""
+    b.value = ""
+    posX.value = ""
+    posY.value = ""
+    posZ.value = ""
+    elementClicked = ""
+
+    console.log(state);
+    console.log(ship);
+    // showMessage("Finish the Error");
+
 });
 
 // Add event listeners for input fields to update block parameters
@@ -223,3 +283,7 @@ document.getElementById('breadth').addEventListener('input', (event) => {
     const value = parseFloat(event.target.value);
     block.scale.y = value;
 });
+
+// Initialize the animation
+init();
+animate();

@@ -22,7 +22,7 @@ export default function renderRayCaster( mouse, camera, scene, intersectedElemen
 	// calculate objects intersecting the picking ray
 	// recursive setted to true to check all sub elements
 	let intersects = raycaster.intersectObjects( scene.children, true );
-    // console.log(intersects);
+	console.log(intersects);
 
 	// Try verifies the if there is intersects[0].object error
 	try {
