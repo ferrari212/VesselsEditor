@@ -302,47 +302,56 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
 
 }
 
-// Add event listeners for input fields to update block parameters
 document.getElementById('height').addEventListener('input', (event) => {
     
     changeVariableValue(event.target.value, "z", elementClicked)
 
 });
-// Add event listeners for input fields to update block parameters
+
 document.getElementById('length').addEventListener('input', (event) => {
     
     changeVariableValue(event.target.value, "x", elementClicked)
 
 });
 
-// Add event listeners for input fields to update block parameters
 document.getElementById('breadth').addEventListener('input', (event) => {
     
     changeVariableValue(event.target.value, "y", elementClicked)
 
 });
 
-// Add event listeners for input fields to update block parameters
 document.getElementById('posX').addEventListener('input', (event) => {
     
     changeVariableValue(event.target.value, "pos_x", elementClicked)
 
 });
 
-// Add event listeners for input fields to update block parameters
 document.getElementById('posY').addEventListener('input', (event) => {
     
     changeVariableValue(event.target.value, "pos_y", elementClicked)
 
 });
 
-// Add event listeners for input fields to update block parameters
 document.getElementById('posZ').addEventListener('input', (event) => {
     
     changeVariableValue(event.target.value, "pos_y", elementClicked)
 
 });
 
+// Insert the input file
+document.getElementById('file-upload-btn').addEventListener('click', function() {
+    showMessage("Json upload under construction");
+    return
+    
+    document.getElementById('file-input').click();
+});
+
+document.getElementById('file-input').addEventListener('change', function() {
+    // Handle the file input change event here
+    // For example, you can access the selected file like this:
+    var file = this.files[0];
+    console.log(file);
+});
 // Initialize the animation
 init();
 animate();
