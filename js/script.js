@@ -214,7 +214,7 @@ document.getElementById('create-block').addEventListener('click', () => {
         "color": "#aabbcc",
         "opacity": 1
     }
-    
+
     compartment.derivedObjects[0].referenceState.xCentre = 20.0
     state.derivedObjects.push(compartment.derivedObjects[0])
     ship = new Vessel.Ship(state);
@@ -280,23 +280,67 @@ document.getElementById('delete-block').addEventListener('click', () => {
 
 });
 
+function changeVariableValue(valueString,  dimension, elementClickedName) {
+    
+    if(!elementClicked){
+        showMessage("Error: No Element Selected");
+        return
+    }
+
+    const value = parseFloat(valueString);
+    const block = scene.getObjectByName(elementClickedName);
+
+    // Verify if the dimension that needs to be updated 
+    // is in the position scale or position
+    const dimensionKey = dimension.includes("pos") ? "position" : "scale" 
+    
+    const modifiedDimension = block[dimensionKey]
+
+    // Takes the last element on the string
+    const cardinalReference = dimension[dimension.length - 1]
+    modifiedDimension[cardinalReference] = value
+
+}
+
 // Add event listeners for input fields to update block parameters
 document.getElementById('height').addEventListener('input', (event) => {
-    // Update block height
-    const value = parseFloat(event.target.value);
-    block.scale.z = value;
+    
+    changeVariableValue(event.target.value, "z", elementClicked)
+
 });
 // Add event listeners for input fields to update block parameters
 document.getElementById('length').addEventListener('input', (event) => {
-    // Update block length
-    const value = parseFloat(event.target.value);
-    block.scale.x = value;
+    
+    changeVariableValue(event.target.value, "x", elementClicked)
+
 });
+
 // Add event listeners for input fields to update block parameters
 document.getElementById('breadth').addEventListener('input', (event) => {
-    // Update block breadth
-    const value = parseFloat(event.target.value);
-    block.scale.y = value;
+    
+    changeVariableValue(event.target.value, "y", elementClicked)
+
+});
+
+// Add event listeners for input fields to update block parameters
+document.getElementById('posX').addEventListener('input', (event) => {
+    
+    changeVariableValue(event.target.value, "pos_x", elementClicked)
+
+});
+
+// Add event listeners for input fields to update block parameters
+document.getElementById('posY').addEventListener('input', (event) => {
+    
+    changeVariableValue(event.target.value, "pos_y", elementClicked)
+
+});
+
+// Add event listeners for input fields to update block parameters
+document.getElementById('posZ').addEventListener('input', (event) => {
+    
+    changeVariableValue(event.target.value, "pos_y", elementClicked)
+
 });
 
 // Initialize the animation
