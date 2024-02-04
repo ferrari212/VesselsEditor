@@ -8,17 +8,17 @@ export function findAddedPosition (ship3D, newBlock) {
     return undefined
 }
 
-export function findCompartmentName(state){
+export function findIndexes(state){
     
     const derivedObjectsArray = state["derivedObjects"]
 
-    if(derivedObjectsArray.length == 0) {
-        return "Tank_1"
+    if (derivedObjectsArray.length == 0) {
+        return "_1"
     }
 
     // Takes the seccond character after splitting with the _ and transform it into integer
     const number_arrays = derivedObjectsArray.map( (obj) => parseInt(obj.id.split("_")[1]) )
     const max_index = Math.max(...number_arrays) + 1;
-    return "Tank_" + max_index
+    return "_" + max_index
 
 }

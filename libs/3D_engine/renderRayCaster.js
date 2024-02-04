@@ -22,7 +22,6 @@ export default function renderRayCaster( mouse, camera, scene, intersectedElemen
 	// calculate objects intersecting the picking ray
 	// recursive setted to true to check all sub elements
 	let intersects = raycaster.intersectObjects( scene.children, true );
-	console.log(intersects);
 
 	// Try verifies the if there is intersects[0].object error
 	try {
@@ -32,7 +31,7 @@ export default function renderRayCaster( mouse, camera, scene, intersectedElemen
 
 	} catch {
 
-		// Objsect touched nothing
+		// Mouse touched nothing
 		returnToOriginalColor();
 
 		return { name: undefined };
@@ -42,21 +41,19 @@ export default function renderRayCaster( mouse, camera, scene, intersectedElemen
 	function setNewColor() {
 
 		if ( intersects[ 0 ].object.name != "" && intersects[ 0 ].object.name != undefined ) {
-			// Objsect touched something
 			
+			// Check if the mouse touched something, and if this
+			// this touched object is different than than the previous element
 			if ( intersectedElement.name != intersects[ 0 ].object.name ) {
 				
-				// Objsect touched is different from the previeus
-				
-				if ( intersectedElement.name != undefined ) {
-					
-					// Check if there was a previeus touched object
-					// Make the previous in its original color
+				// Previous element touched is different than nothing
+				if ( intersectedElement.name != undefined) {
+										
 					intersectedElement.material.color.set( intersectedElement.currentHex );
 					
 				}
 				
-				// cast name and colors of the object
+				// Cast name and colors of the object and set 
 				intersectedElement = intersects[ 0 ].object;
 				intersectedElement.currentHex = intersectedElement.material.color.getHex();
 				

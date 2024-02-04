@@ -14,7 +14,7 @@ import * as Vessel from "../libs/vessel.module.min.js";
 import state from "./dataBase.js";
 
 // Import find compartment
-import { findCompartmentName } from "./findAddedPosition.js"
+import { findIndexes } from "./findAddedPosition.js"
 
 // Importing Ship3D library
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
@@ -108,6 +108,8 @@ function animate() {
         intersected = renderRayCaster(mouse, camera, scene, intersected)
     }
 
+    // Change the cursor to the default if the element is clicked or 
+    // the cursor is out of specific elements 
     if (intersected.name === undefined || elementClicked) {
         document.body.style.cursor = "default"
     } else {
@@ -131,6 +133,7 @@ function onMouseMove( event ) {
 
 function onMouseDoubleClick (event) {
 
+    const selectedName = document.getElementById('selectedName')
     const h = document.getElementById('height')
     const l = document.getElementById('length')
     const b = document.getElementById('breadth')
@@ -146,6 +149,7 @@ function onMouseDoubleClick (event) {
         console.log(element.position);
         console.log(element.scale);
 
+        selectedName.value = elementClicked
         h.value = element.scale.x
         l.value = element.scale.y
         b.value = element.scale.z
@@ -156,13 +160,14 @@ function onMouseDoubleClick (event) {
     
     }
 
+    selectedName.value = ""
     h.value = ""
     l.value = ""
     b.value = ""
     posX.value = ""
     posY.value = ""
     posZ.value = ""
-    elementClicked = ""
+    elementClicked = undefined
 
 }
 
@@ -197,9 +202,19 @@ document.getElementById('create-block').addEventListener('click', () => {
     // Remove the Ship 3D
     scene.remove(ship3D)
 
-    const tank_name = findCompartmentName(state)
-    let compartment = JSON.parse(JSON.stringify(defaultCompartment))
-    compartment.derivedObjects[0].id = tank_name
+    // const tank_name = findIndexes(state)
+    const compartmentIndex = findIndexes(state)
+
+    // Clone the default compartment object
+    const compartment = JSON.parse(JSON.stringify(defaultCompartment))
+
+    // Set the new indexes
+    compartment.derivedObjects[0].id = "Tank" + compartmentIndex
+    compartment.derivedObjects[0].style = {
+        "color": "#aabbcc",
+        "opacity": 1
+    }
+    
     compartment.derivedObjects[0].referenceState.xCentre = 20.0
     state.derivedObjects.push(compartment.derivedObjects[0])
     ship = new Vessel.Ship(state);
@@ -211,15 +226,15 @@ document.getElementById('create-block').addEventListener('click', () => {
         objectOpacity: 1
     });
     scene.add(ship3D);
-
-    showMessage("Error: The function to ADD the block is not set yet");
+    
+    // showMessage("Error: The function to ADD the block is not set yet");
 });
 
 document.getElementById('delete-block').addEventListener('click', () => {
     
     
     if ( !elementClicked ) {
-        showMessage("Error: The function to DELETE the block is not set yet");
+        showMessage("Error: No element selected");
         return
     }    
     
