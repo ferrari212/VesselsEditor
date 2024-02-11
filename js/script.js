@@ -20,7 +20,7 @@ import { findIndexes } from "./findAddedPosition.js"
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
 
 // Basic Three.js setup
-let zUpCont, camera, renderer, block;
+let zUpCont, scene, camera, renderer;
 
 // Raycaster Parameters
 let intersected, mouse, elementClicked, parametersMenu;
@@ -47,8 +47,9 @@ defaultCompartment["derivedObjects"] = [
 
 function init() {
 
-    // Setting up Three.js zUpCont, camera, and renderer to the previous defined variables
-    ({ zUpCont, camera, renderer } = setUpThreeJs());
+    // Setting up Three.js scene, camera, and renderer to the previous defined variables
+    ({ scene, camera, renderer } = setUpThreeJs());
+
     Object.assign(state, defaultCompartment)
     ship = new Vessel.Ship(state);
     ship3D = new Ship3D(ship, {
@@ -58,6 +59,9 @@ function init() {
         deckOpacity: 1,
         objectOpacity: 1
     });
+    scene.add(ship3D);
+    
+    // Adding the ship3D into the zUp function
     zUpCont.add(ship3D);
 
     console.log(state);
@@ -84,33 +88,33 @@ function setUpThreeJs () {
     renderer.setClearColor(0xa9cce3, 1);
     document.getElementById('canvas').appendChild(renderer.domElement);
 
-    // Setting the Z-Up reference system.
-    THREE.Object3D.DefaultUp.set(0, 0, 1);
-    const zUpCont = new THREE.Group();
-    zUpCont.rotation.x = -0.5 * Math.PI;
-    scene.add(zUpCont);
-
     // Add orbit controls to rotate the scene
     const controls = new OrbitControls(camera, renderer.domElement);
 
+    // Setting the Z-Up reference system.
+    THREE.Object3D.DefaultUp.set(0, 0, 1);
+    zUpCont = new THREE.Group();
+    zUpCont.rotation.x = -0.5 * Math.PI;
+    scene.add(zUpCont);
+
     // Lighting
-    zUpCont.add(new THREE.AmbientLight(0xffffff, 0.5));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
     // Adding the axesHelper
     const axesHelper = new THREE.AxesHelper( 3 );
-    zUpCont.add( axesHelper );
-    
-    return {zUpCont, camera, renderer}
+    scene.add( axesHelper );
+
+    return {scene, camera, renderer}
 
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    renderer.render(zUpCont, camera);
+    renderer.render(scene, camera);
 
     // Apply the function RayCaster only if the element clicked is undefined
     if (elementClicked === undefined) {
-        intersected = renderRayCaster(mouse, camera, zUpCont, intersected)
+        intersected = renderRayCaster(mouse, camera, scene, intersected)
     }
 
     // Change the cursor to the default if the element is clicked or 
@@ -155,9 +159,10 @@ function onMouseDoubleClick (event) {
         console.log(element.scale);
 
         selectedName.value = elementClicked
-        h.value = element.scale.x
-        l.value = element.scale.y
-        b.value = element.scale.z
+        // elements considering the zUpCont coordinates
+        h.value = element.scale.z
+        l.value = element.scale.x
+        b.value = element.scale.y
         posX.value = element.position.x
         posY.value = element.position.y
         posZ.value = element.position.z
@@ -293,7 +298,7 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     }
 
     const value = parseFloat(valueString);
-    const block = zUpCont.getObjectByName(elementClickedName);
+    const block = scene.getObjectByName(elementClickedName);
 
     // Verify if the dimension that needs to be updated 
     // is in the position scale or position
@@ -339,7 +344,7 @@ document.getElementById('posY').addEventListener('input', (event) => {
 
 document.getElementById('posZ').addEventListener('input', (event) => {
     
-    changeVariableValue(event.target.value, "pos_y", elementClicked)
+    changeVariableValue(event.target.value, "pos_z", elementClicked)
 
 });
 
