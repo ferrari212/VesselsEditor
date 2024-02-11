@@ -107,28 +107,36 @@
       <!-- Add more input fields for coordinates and rotation as needed -->
     </div>
     <div id="canvas"></div>
+
     <!-- Button to trigger file input -->
-    <button
-      id="file-upload-btn"
-      class="bg-gray-400 hover:bg-blue-700 text-white font-bold rounded-full"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        width="24"
-        height="24"
+    <div class="relative inline-block group">
+      <button
+        id="file-upload-btn"
+        class="bg-gray-400 hover:bg-blue-700 text-white font-bold rounded-full"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"
-        />
-      </svg>
-      <input type="file" id="file-input" />
-    </button>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          width="24"
+          height="24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4-4m0 0l-4 4m4-4v12"
+          />
+        </svg>
+        <input type="file" id="file-input" />
+        <span
+          class="absolute bg-white text-black text-xs rounded py-1 px-2 -top-10 left-1/2 transform -translate-x-1/2 hidden group-hover:block"
+          >Upload Ship</span
+        >
+      </button>
+    </div>
+
     <!-- Three.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="./js/script.js" type="module"></script>
