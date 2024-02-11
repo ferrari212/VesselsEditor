@@ -20,7 +20,7 @@ import { findIndexes } from "./findAddedPosition.js"
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
 
 // Basic Three.js setup
-let scene, camera, renderer, block;
+let zUpCont, camera, renderer, block;
 
 // Raycaster Parameters
 let intersected, mouse, elementClicked, parametersMenu;
@@ -47,9 +47,8 @@ defaultCompartment["derivedObjects"] = [
 
 function init() {
 
-    // Setting up Three.js scene, camera, and renderer to the previous defined variables
-    ({ scene, camera, renderer } = setUpThreeJs());
-
+    // Setting up Three.js zUpCont, camera, and renderer to the previous defined variables
+    ({ zUpCont, camera, renderer } = setUpThreeJs());
     Object.assign(state, defaultCompartment)
     ship = new Vessel.Ship(state);
     ship3D = new Ship3D(ship, {
@@ -59,7 +58,7 @@ function init() {
         deckOpacity: 1,
         objectOpacity: 1
     });
-    scene.add(ship3D);
+    zUpCont.add(ship3D);
 
     console.log(state);
     console.log(ship);
@@ -85,27 +84,33 @@ function setUpThreeJs () {
     renderer.setClearColor(0xa9cce3, 1);
     document.getElementById('canvas').appendChild(renderer.domElement);
 
+    // Setting the Z-Up reference system.
+    THREE.Object3D.DefaultUp.set(0, 0, 1);
+    const zUpCont = new THREE.Group();
+    zUpCont.rotation.x = -0.5 * Math.PI;
+    scene.add(zUpCont);
+
     // Add orbit controls to rotate the scene
     const controls = new OrbitControls(camera, renderer.domElement);
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+    zUpCont.add(new THREE.AmbientLight(0xffffff, 0.5));
 
     // Adding the axesHelper
     const axesHelper = new THREE.AxesHelper( 3 );
-    scene.add( axesHelper );
-
-    return {scene, camera, renderer}
+    zUpCont.add( axesHelper );
+    
+    return {zUpCont, camera, renderer}
 
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    renderer.render(zUpCont, camera);
 
     // Apply the function RayCaster only if the element clicked is undefined
     if (elementClicked === undefined) {
-        intersected = renderRayCaster(mouse, camera, scene, intersected)
+        intersected = renderRayCaster(mouse, camera, zUpCont, intersected)
     }
 
     // Change the cursor to the default if the element is clicked or 
@@ -145,7 +150,7 @@ function onMouseDoubleClick (event) {
     if (elementClicked != intersected.name) {
     
         elementClicked = intersected.name
-        const element = scene.getObjectByName(elementClicked)
+        const element = zUpCont.getObjectByName(elementClicked)
         console.log(element.position);
         console.log(element.scale);
 
@@ -200,7 +205,7 @@ document.getElementById('create-block').addEventListener('click', () => {
     console.log("Created the block");
 
     // Remove the Ship 3D
-    scene.remove(ship3D)
+    zUpCont.remove(ship3D)
 
     // const tank_name = findIndexes(state)
     const compartmentIndex = findIndexes(state)
@@ -225,7 +230,7 @@ document.getElementById('create-block').addEventListener('click', () => {
         deckOpacity: 1,
         objectOpacity: 1
     });
-    scene.add(ship3D);
+    zUpCont.add(ship3D);
     
     // showMessage("Error: The function to ADD the block is not set yet");
 });
@@ -239,7 +244,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     }    
     
     // Remove the Ship 3D
-    scene.remove(ship3D)
+    zUpCont.remove(ship3D)
   
     // Delete the derived object
     ship.deleteDerivedObjectById(elementClicked)
@@ -255,8 +260,8 @@ document.getElementById('delete-block').addEventListener('click', () => {
 
     // Maintain the derived objects that does not have the same element clicked
     state.derivedObjects = state.derivedObjects.filter(obj => obj.id != elementClicked)
-    // Add once again the Ship3D in the scene
-    scene.add(ship3D);
+    // Add once again the Ship3D in the zUpCont
+    zUpCont.add(ship3D);
 
     const h = document.getElementById('height')
     const l = document.getElementById('length')
@@ -288,7 +293,7 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     }
 
     const value = parseFloat(valueString);
-    const block = scene.getObjectByName(elementClickedName);
+    const block = zUpCont.getObjectByName(elementClickedName);
 
     // Verify if the dimension that needs to be updated 
     // is in the position scale or position
@@ -339,6 +344,7 @@ document.getElementById('posZ').addEventListener('input', (event) => {
 });
 
 // Insert the input file
+// This is under construction @FELDEO
 document.getElementById('file-upload-btn').addEventListener('click', function() {
     showMessage("Json upload under construction");
     return
