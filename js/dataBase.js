@@ -1,13 +1,13 @@
 // This function creates a start generic ship to be used in the library
 // The object contains the minimum acceptable object to make the Vessel function works
 // this ship spec must be modified to accommodate the ship State class.
-let state = {
+let stateDb = {
     "attributes": {},
     "designState": {},
 } 
 
 // Defining Design States
-state["designState"] = {
+stateDb["designState"] = {
     "calculationParameters": {
         "LWL_design": 22.5,
         "BWL": 10,
@@ -32,7 +32,7 @@ state["designState"] = {
 
 
 // Defining Structure
-state["structure"] = {
+stateDb["structure"] = {
     "hull": {
         "attributes": {
             "LOA": 22.5,
@@ -50,37 +50,4 @@ state["structure"] = {
    "bulkheads": {}
 }
 
-// Defining specifications
-state["baseObjects"] = [
-    {
-        "id": "Cargo", 
-        "affiliations": {},
-        "boxDimensions": {
-            "length": 10.0,
-            "breadth": 10.0,
-            "height": 10.0
-        },
-        "capabilities": {},
-        "baseState": {
-            "fullness": 0
-        },
-        "weightInformation": {
-            "contentDensity": 850,
-            "volumeCapacity": 145,
-            "lightweight": 10000,
-            "fullnessCGMapping": {
-            "fullnesses": [0, 0.25, 0.5, 0.75, 1],
-            "cgs": [
-                [0, 0, 0.8],
-                [0, 0, 0.347013783],
-                [0, 0, 0.455846422],
-                [0, 0, 0.6195241],
-                [0, 0, 0.8]
-            ]
-            }
-        }
-    }
-]
-
-
-export default state
+export default stateDb

@@ -11,7 +11,7 @@ import renderRayCaster from "../libs/3D_engine/renderRayCaster.js"
 import * as Vessel from "../libs/vessel.module.min.js";
 
 // Importing the minimum database that represents a ship
-import state from "./dataBase.js";
+import stateDb from "./dataBase.js";
 
 // Import find compartment
 import { findIndexes } from "./findAddedPosition.js"
@@ -25,15 +25,45 @@ let zUpCont, scene, camera, renderer;
 // Raycaster Parameters
 let intersected, mouse, elementClicked, parametersMenu;
 
-// Vessels.js state instances
+// Vessels.js stateDb instances
 let ship, ship3D
 
 // Default derived objects
 const defaultCompartment = {}
+defaultCompartment["baseObjects"] = [
+    {
+        "id": "Tank_1", 
+        "affiliations": {},
+        "boxDimensions": {
+            "length": 10.0,
+            "breadth": 10.0,
+            "height": 10.0
+        },
+        "capabilities": {},
+        "baseState": {
+            "fullness": 0
+        },
+        "weightInformation": {
+            "contentDensity": 850,
+            "volumeCapacity": 145,
+            "lightweight": 10000,
+            "fullnessCGMapping": {
+            "fullnesses": [0, 0.25, 0.5, 0.75, 1],
+            "cgs": [
+                [0, 0, 0.8],
+                [0, 0, 0.347013783],
+                [0, 0, 0.455846422],
+                [0, 0, 0.6195241],
+                [0, 0, 0.8]
+            ]
+            }
+        }
+    }
+]
 defaultCompartment["derivedObjects"] = [
     {
         "id": "Tank_1", 
-        "baseObject": "Cargo", 
+        "baseObject": "Tank_1", 
         "affiliations": {
             "group": "cargo tanks",
         },
@@ -50,8 +80,8 @@ function init() {
     // Setting up Three.js scene, camera, and renderer to the previous defined variables
     ({ scene, camera, renderer } = setUpThreeJs());
 
-    Object.assign(state, defaultCompartment)
-    ship = new Vessel.Ship(state);
+    Object.assign(stateDb, defaultCompartment)
+    ship = new Vessel.Ship(stateDb);
     ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
         lowerColor: 0xaa3333,
@@ -64,7 +94,7 @@ function init() {
     // Adding the ship3D into the zUp function
     zUpCont.add(ship3D);
 
-    console.log(state);
+    console.log(stateDb);
     console.log(ship);
 
     // Set up the camera
@@ -212,22 +242,27 @@ document.getElementById('create-block').addEventListener('click', () => {
     // Remove the Ship 3D
     zUpCont.remove(ship3D)
 
-    // const tank_name = findIndexes(state)
-    const compartmentIndex = findIndexes(state)
+    // const tank_name = findIndexes(stateDb)
+    const compartmentIndex = findIndexes(stateDb)
 
     // Clone the default compartment object
     const compartment = JSON.parse(JSON.stringify(defaultCompartment))
 
     // Set the new indexes
-    compartment.derivedObjects[0].id = "Tank" + compartmentIndex
+    const keyId = "Tank" + compartmentIndex
+    compartment.derivedObjects[0].id = keyId
+    compartment.baseObjects[0].id = keyId
+    compartment.derivedObjects[0].baseObject = keyId
     compartment.derivedObjects[0].style = {
         "color": "#aabbcc",
         "opacity": 1
     }
 
     compartment.derivedObjects[0].referenceState.xCentre = 20.0
-    state.derivedObjects.push(compartment.derivedObjects[0])
-    ship = new Vessel.Ship(state);
+    stateDb.baseObjects.push(compartment.baseObjects[0])
+    stateDb.derivedObjects.push(compartment.derivedObjects[0])
+    debugger
+    ship = new Vessel.Ship(stateDb);
     ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
         lowerColor: 0xaa3333,
@@ -252,7 +287,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     zUpCont.remove(ship3D)
   
     // Delete the derived object
-    ship.deleteDerivedObjectById(elementClicked)
+    ship.deleteBaseObjectById(elementClicked)
 
     // Reconstruct the Ship3D
     ship3D = new Ship3D(ship, {
@@ -264,7 +299,8 @@ document.getElementById('delete-block').addEventListener('click', () => {
     });
 
     // Maintain the derived objects that does not have the same element clicked
-    state.derivedObjects = state.derivedObjects.filter(obj => obj.id != elementClicked)
+    stateDb.baseObjects = stateDb.baseObjects.filter(obj => obj.id != elementClicked)
+    stateDb.derivedObjects = stateDb.derivedObjects.filter(obj => obj.id != elementClicked)
     // Add once again the Ship3D in the zUpCont
     zUpCont.add(ship3D);
 
@@ -284,7 +320,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     posZ.value = ""
     elementClicked = ""
 
-    console.log(state);
+    console.log(stateDb);
     console.log(ship);
     // showMessage("Finish the Error");
 
@@ -301,7 +337,8 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     const block = scene.getObjectByName(elementClickedName);
 
     // Verify if the dimension that needs to be updated 
-    // is in the position scale or position
+    // is in the scale or position. In case the position is modified change the 
+    // referenceState center, otherwise change the box dimensions
     const dimensionKey = dimension.includes("pos") ? "position" : "scale" 
     
     const modifiedDimension = block[dimensionKey]
@@ -309,6 +346,36 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     // Takes the last element on the string
     const cardinalReference = dimension[dimension.length - 1]
     modifiedDimension[cardinalReference] = value
+
+    const updateObjects = {
+        "position": () => {
+            ship3D.ship.changeBaseObjectById(elementClickedName, {"boxDimensions": {
+                "length": modifiedDimension.x,
+                "breadth": modifiedDimension.y,
+                "height": modifiedDimension.z
+                    }
+                }
+            )
+        },
+        "scale": () => {
+            ship3D.ship.changeBaseObjectById(elementClickedName, {"position": {
+                "xCentre": modifiedDimension.x,
+                "yCentre": modifiedDimension.y,
+                "zCentre": modifiedDimension.z
+                    }
+                }
+            )
+        }
+    }
+        
+
+    ship3D.ship.changeBaseObjectById(elementClickedName, {"boxDimensions": {
+        "length": modifiedDimension.x,
+        "breadth": modifiedDimension.y,
+        "height": modifiedDimension.z
+    }})
+    console.log(ship3D.ship.derivedObjects[elementClickedName]);
+    debugger
 
 }
 
