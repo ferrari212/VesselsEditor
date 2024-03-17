@@ -250,18 +250,22 @@ document.getElementById('create-block').addEventListener('click', () => {
 
     // Set the new indexes
     const keyId = "Tank" + compartmentIndex
-    compartment.derivedObjects[0].id = keyId
-    compartment.baseObjects[0].id = keyId
-    compartment.derivedObjects[0].baseObject = keyId
-    compartment.derivedObjects[0].style = {
+
+    const baseObjects = compartment.baseObjects[0]
+    const derivedObjects = compartment.derivedObjects[0]
+
+    baseObjects.id = keyId
+    derivedObjects.id = keyId
+    derivedObjects.baseObject = keyId
+    derivedObjects.style = {
         "color": "#aabbcc",
         "opacity": 1
     }
 
-    compartment.derivedObjects[0].referenceState.xCentre = 20.0
-    stateDb.baseObjects.push(compartment.baseObjects[0])
-    stateDb.derivedObjects.push(compartment.derivedObjects[0])
-    debugger
+    derivedObjects.referenceState.xCentre = 20.0
+    stateDb.baseObjects.push(baseObjects)
+    stateDb.derivedObjects.push(derivedObjects)
+
     ship = new Vessel.Ship(stateDb);
     ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
@@ -318,7 +322,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     posX.value = ""
     posY.value = ""
     posZ.value = ""
-    elementClicked = ""
+    elementClicked = undefined
 
     console.log(stateDb);
     console.log(ship);
@@ -348,7 +352,7 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     modifiedDimension[cardinalReference] = value
 
     const updateObjects = {
-        "position": () => {
+        "scale": () => {
             ship3D.ship.changeBaseObjectById(elementClickedName, {"boxDimensions": {
                 "length": modifiedDimension.x,
                 "breadth": modifiedDimension.y,
@@ -356,26 +360,42 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
                     }
                 }
             )
+            stateDb.baseObjects.forEach(obj => {
+                if (obj.id === elementClickedName) {
+                    obj.boxDimensions.length = modifiedDimension.x;
+                    obj.boxDimensions.breadth = modifiedDimension.y;
+                    obj.boxDimensions.height = modifiedDimension.z;
+                }                
+            });
         },
-        "scale": () => {
-            ship3D.ship.changeBaseObjectById(elementClickedName, {"position": {
+        "position": () => {
+            ship3D.ship.changeDerivedObjectById(elementClickedName, {"referenceState": {
                 "xCentre": modifiedDimension.x,
                 "yCentre": modifiedDimension.y,
                 "zCentre": modifiedDimension.z
                     }
                 }
             )
+            stateDb.derivedObjects.forEach(obj => {
+                if (obj.id === elementClickedName) {
+                    obj.referenceState.xCentre = modifiedDimension.x;
+                    obj.referenceState.yCentre = modifiedDimension.y;
+                    obj.referenceState.zBase = modifiedDimension.z;
+                }                
+            });
         }
     }
         
+    // ship3D.ship.changeBaseObjectById(elementClickedName, {"boxDimensions": {
+    //     "length": modifiedDimension.x,
+    //     "breadth": modifiedDimension.y,
+    //     "height": modifiedDimension.z
+    // }})
 
-    ship3D.ship.changeBaseObjectById(elementClickedName, {"boxDimensions": {
-        "length": modifiedDimension.x,
-        "breadth": modifiedDimension.y,
-        "height": modifiedDimension.z
-    }})
-    console.log(ship3D.ship.derivedObjects[elementClickedName]);
-    debugger
+    updateObjects[dimensionKey]()
+    console.log(dimensionKey);
+    console.log(ship3D.ship.baseObjects[elementClickedName].boxDimensions);
+    console.log(ship3D.ship.derivedObjects[elementClickedName].referenceState);
 
 }
 
@@ -430,6 +450,7 @@ document.getElementById('file-input').addEventListener('change', function() {
     var file = this.files[0];
     console.log(file);
 });
+
 // Initialize the animation
 init();
 animate();
