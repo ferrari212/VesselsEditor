@@ -14,7 +14,10 @@ import * as Vessel from "../libs/vessel.module.min.js";
 import stateDb from "./dataBase.js";
 
 // Import find compartment
-import { findIndexes } from "./findAddedPosition.js"
+import { findIndexes } from "./scripts/findAddedPosition.js"
+
+// Import ship function
+import { readSingleFile } from "./scripts/importShipFunction.js";
 
 // Importing Ship3D library
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
@@ -437,19 +440,28 @@ document.getElementById('posZ').addEventListener('input', (event) => {
 
 // Insert the input file
 // This is under construction @FELDEO
-document.getElementById('file-upload-btn').addEventListener('click', function() {
-    showMessage("Json upload under construction");
-    return
+document.getElementById('file-upload-btn').addEventListener('click', function(e) {
     
     document.getElementById('file-input').click();
+    
 });
 
-document.getElementById('file-input').addEventListener('change', function() {
-    // Handle the file input change event here
-    // For example, you can access the selected file like this:
-    var file = this.files[0];
-    console.log(file);
-});
+document.getElementById('file-input').addEventListener('change', (e) => { 
+    
+    const response = readSingleFile(e)
+
+    if (response.status == 400) {
+
+        showMessage(response.message);
+
+        return
+    
+    }
+
+    console.log("Success: ", response.message);
+
+}, false);
+
 
 // Initialize the animation
 init();

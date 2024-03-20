@@ -21,6 +21,19 @@
         justify-content: center;
         cursor: pointer;
       }
+      #file-export-btn {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        position: fixed;
+        bottom: 20px;
+        right: 100px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
       #file-input {
         display: none; /* Hide the actual input */
       }
@@ -130,6 +143,36 @@
         <span
           class="absolute bg-white text-black text-xs rounded py-1 px-2 -top-10 left-1/2 transform -translate-x-1/2 hidden group-hover:block"
           >Upload Ship</span
+        >
+      </button>
+    </div>
+
+    <!-- Button to trigger file input -->
+    <div class="relative inline-block group">
+      <button
+        id="file-export-btn"
+        class="bg-gray-400 hover:bg-blue-700 text-white font-bold rounded-full"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          width="24"
+          height="24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4"
+          />
+        </svg>
+        <!-- The file exporter does not use any input function -->
+        <!-- <input type="file" id="file-input" /> -->
+        <span
+          class="absolute bg-white text-black text-xs rounded py-1 px-2 -top-10 left-1/2 transform -translate-x-1/2 hidden group-hover:block"
+          >Download Scene</span
         >
       </button>
     </div>
