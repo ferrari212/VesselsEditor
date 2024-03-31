@@ -47,7 +47,7 @@ export function readSingleFile(e, callback) {
 
         } catch (error) {
             
-            result.message = 'Error parsing JSON: ' + error 
+            result.message = 'Error parsing JSON: ' + error
 
             console.error(result.message);
             callback(result)
@@ -59,4 +59,8 @@ export function readSingleFile(e, callback) {
     
     reader.readAsText(file);
 
+}
+
+function download() {
+    
 }

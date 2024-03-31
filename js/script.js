@@ -18,7 +18,7 @@ import { stateDb } from "./dataBase.js";
 import { findIndexes } from "./scripts/findAddedPosition.js"
 
 // Import ship function
-import { readSingleFile } from "./scripts/importShipFunction.js";
+import { readSingleFile } from "./scripts/dataExchangeFunctions.js";
 
 // Importing Ship3D library
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
@@ -482,7 +482,7 @@ document.getElementById('file-input').addEventListener('change', (e) => {
 
 document.getElementById('file-export-btn').addEventListener('click', function(e) {
     
-    showMessage("Function not developed yet");
+    Vessel.downloadShip(ship)
     
 });
 
