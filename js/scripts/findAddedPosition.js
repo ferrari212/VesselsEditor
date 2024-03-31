@@ -17,8 +17,18 @@ export function findIndexes(state){
     }
 
     // Takes the seccond character after splitting with the _ and transform it into integer
-    const number_arrays = derivedObjectsArray.map( (obj) => parseInt(obj.id.split("_")[1]) )
+    const number_arrays = derivedObjectsArray.map( (obj) => {
+        
+        const value = parseInt( obj.id.split("_")[1] )
+        
+        if (Number.isNaN(value)) {
+            return 1
+        } 
+
+        return value
+    } )
     const max_index = Math.max(...number_arrays) + 1;
+
     return "_" + max_index
 
 }
