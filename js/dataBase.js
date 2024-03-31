@@ -1,7 +1,7 @@
 // This function creates a start generic ship to be used in the library
 // The object contains the minimum acceptable object to make the Vessel function works
 // this ship spec must be modified to accommodate the ship State class.
-let stateDb = {
+export let stateDb = {
     "attributes": {},
     "designState": {},
 } 
@@ -49,5 +49,3 @@ stateDb["structure"] = {
     "decks": {},
    "bulkheads": {}
 }
-
-export default stateDb

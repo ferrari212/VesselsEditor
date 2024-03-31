@@ -8,10 +8,11 @@ import { OrbitControls } from "../libs/3D_engine/OrbitControls.js";
 import renderRayCaster from "../libs/3D_engine/renderRayCaster.js"
 
 // Importing Vessels.js library
-import * as Vessel from "../libs/vessel.module.min.js";
+// import * as Vessel from "../libs/vessel.module.min.js";
+import * as Vessel from "../libs/vessel.module.js";
 
 // Importing the minimum database that represents a ship
-import stateDb from "./dataBase.js";
+import { stateDb } from "./dataBase.js";
 
 // Import find compartment
 import { findIndexes } from "./scripts/findAddedPosition.js"
@@ -239,9 +240,7 @@ function showMessage(errorMessageText) {
 
 // Event listeners for creating and deleting blocks
 document.getElementById('create-block').addEventListener('click', () => {
-    // Function to create blocks
-    console.log("Created the block");
-
+    
     // Remove the Ship 3D
     zUpCont.remove(ship3D)
 
@@ -294,7 +293,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     zUpCont.remove(ship3D)
   
     // Delete the derived object
-    ship.deleteBaseObjectById(elementClicked)
+    ship.deleteDerivedObjectById(elementClicked)
 
     // Reconstruct the Ship3D
     ship3D = new Ship3D(ship, {
@@ -319,6 +318,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     const posZ = document.getElementById('posZ')
 
     // Delete Elements
+    selectedName.value = ""
     h.value = ""
     l.value = ""
     b.value = ""
@@ -448,19 +448,43 @@ document.getElementById('file-upload-btn').addEventListener('click', function(e)
 
 document.getElementById('file-input').addEventListener('change', (e) => { 
     
-    const response = readSingleFile(e)
+    const callback = (resp) => {
 
-    if (response.status == 400) {
+        if (resp.status == 400) {
 
-        showMessage(response.message);
-
-        return
+            showMessage(resp.message);
     
-    }
+            return
+        
+        }    
 
-    console.log("Success: ", response.message);
+        // Remove the Ship 3D
+        zUpCont.remove(ship3D)
+    
+        // Changing the initial state db to the new JSON
+        Object.assign(stateDb, resp.json)
+
+        ship = new Vessel.Ship(resp.json);
+        ship3D = new Ship3D(ship, {
+            upperColor: 0x33aa33,
+            lowerColor: 0xaa3333,
+            hullOpacity: 1,
+            deckOpacity: 1,
+            objectOpacity: 1
+        });
+        zUpCont.add(ship3D);
+
+    }
+    
+    readSingleFile(e, callback)
 
 }, false);
+
+document.getElementById('file-export-btn').addEventListener('click', function(e) {
+    
+    showMessage("Function not developed yet");
+    
+});
 
 
 // Initialize the animation

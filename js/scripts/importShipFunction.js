@@ -1,4 +1,4 @@
-export function readSingleFile(e) {
+export function readSingleFile(e, callback) {
 
     const file = e.target.files[0];
 
@@ -14,7 +14,9 @@ export function readSingleFile(e) {
         
         result.message = "No file provided."
 
-        return result
+        callback(result)
+
+        return
     
     }
 
@@ -22,8 +24,10 @@ export function readSingleFile(e) {
     if (file.type !== 'application/json') {
         
         result.message = "File is not a JSON file."
+        
+        callback(result);
 
-        return result;
+        return
 
     }
 
@@ -37,19 +41,22 @@ export function readSingleFile(e) {
         
             result.json = JSON.parse(contents);
             result.message = "Success"
+            result.status = 200            
+
+            callback(result)
 
         } catch (error) {
             
             result.message = 'Error parsing JSON: ' + error 
 
             console.error(result.message);
+            callback(result)
+        
+        };        
 
-        };
 
     };
     
     reader.readAsText(file);
-
-    return result;
 
 }
