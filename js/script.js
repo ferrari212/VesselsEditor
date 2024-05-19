@@ -138,6 +138,17 @@ function setUpThreeJs () {
     const axesHelper = new THREE.AxesHelper( 3 );
     scene.add( axesHelper );
 
+    // Resizing the scene when object resize
+    window.addEventListener( 'resize', onWindowResize, false );
+    function onWindowResize(){
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
     return {scene, camera, renderer}
 
 }
