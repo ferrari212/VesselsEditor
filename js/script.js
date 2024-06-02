@@ -174,37 +174,58 @@ function onMouseMove( event ) {
 
 }
 
+// Function to check if a color is dark
+function isColorDark(color) {
+    // input a color THREE.Color element
+
+    // Use the luminance formula to determine brightness
+    let luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+
+    // Return true if the color is dark
+    return luminance < 128;
+
+}
+
 function onMouseDoubleClick (event) {
 
     const selectedName = document.getElementById('selectedName')
+    const colorBox = document.getElementById('color')
     const h = document.getElementById('height')
     const l = document.getElementById('length')
     const b = document.getElementById('breadth')
     const posX = document.getElementById('posX')
     const posY = document.getElementById('posY')
     const posZ = document.getElementById('posZ')
-
+   
     // In case the new element is different from the intersected
     if (elementClicked != intersected.name) {
-    
+        
         elementClicked = intersected.name
         const element = zUpCont.getObjectByName(elementClicked)
         console.log(element.position);
         console.log(element.scale);
+
+        // Showing the color
+        const color = new THREE.Color(element.currentHex)
+        colorBox.classList.remove("bg-white")
+        colorBox.style.backgroundColor = "#" +  color.getHexString();
+        isColorDark(color) ? colorBox.classList.add('placeholder-white') : colorBox.classList.remove('placeholder-white')
 
         selectedName.value = elementClicked
         // elements considering the zUpCont coordinates
         h.value = element.scale.z
         l.value = element.scale.x
         b.value = element.scale.y
-        posX.value = element.position.x
-        posY.value = element.position.y
-        posZ.value = element.position.z
+        posX.value = element.position.x.toFixed(1)
+        posY.value = element.position.y.toFixed(1)
+        posZ.value = element.position.z.toFixed(1)
         return
     
     }
 
     selectedName.value = ""
+    colorBox.style.backgroundColor = "#FFF"
+    colorBox.classList.remove('placeholder-white')
     h.value = ""
     l.value = ""
     b.value = ""
