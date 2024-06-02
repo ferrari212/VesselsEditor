@@ -8,7 +8,8 @@ import { OrbitControls } from "../libs/3D_engine/OrbitControls.js";
 import renderRayCaster from "../libs/3D_engine/renderRayCaster.js"
 
 // Importing Vessels.js library
-import * as Vessel from "../libs/vessel.module.min.js";
+import * as Vessel from "../libs/vessel.module.js";
+export const Ship = Vessel.Ship
 // import * as Vessel from "../libs/vessel.module.js";
 
 // Importing the minimum database that represents a ship
@@ -24,7 +25,8 @@ import { readSingleFile } from "./scripts/dataExchangeFunctions.js";
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
 
 // Basic Three.js setup
-let zUpCont, scene, camera, renderer;
+let scene, camera, renderer;
+export let zUpCont
 
 // Raycaster Parameters
 let intersected, mouse, elementClicked, parametersMenu;
@@ -85,7 +87,7 @@ function init() {
     ({ scene, camera, renderer } = setUpThreeJs());
 
     Object.assign(stateDb, defaultCompartment)
-    ship = new Vessel.Ship(stateDb);
+    ship = new Ship(stateDb);
     ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
         lowerColor: 0xaa3333,
@@ -93,7 +95,6 @@ function init() {
         deckOpacity: 1,
         objectOpacity: 1
     });
-    scene.add(ship3D);
     
     // Adding the ship3D into the zUp function
     zUpCont.add(ship3D);
@@ -140,7 +141,7 @@ function setUpThreeJs () {
 
     // Resizing the scene when object resize
     window.addEventListener( 'resize', onWindowResize, false );
-    function onWindowResize(){
+    function onWindowResize() {
 
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -228,6 +229,7 @@ function onMouseDoubleClick (event) {
 
 // Generic function for error shown display
 function showMessage(errorMessageText) {
+
     const errorContainer = document.getElementById('errorContainer');
     const errorMessage = document.createElement('div');
 
@@ -247,9 +249,14 @@ function showMessage(errorMessageText) {
         errorMessage.classList.replace('opacity-100', 'opacity-0');
         setTimeout(() => errorMessage.remove(), 1000); // Remove after fade-out
     }, 3000);
+
 }
 
-// Event listeners for creating and deleting blocks
+// ------------------------------------------------ //
+//
+// Event listeners for creating and deleting blocks //
+//
+// ------------------------------------------------ //
 document.getElementById('create-block').addEventListener('click', () => {
     
     // Remove the Ship 3D
@@ -279,7 +286,7 @@ document.getElementById('create-block').addEventListener('click', () => {
     stateDb.baseObjects.push(baseObjects)
     stateDb.derivedObjects.push(derivedObjects)
 
-    ship = new Vessel.Ship(stateDb);
+    ship = new Ship(stateDb);
     ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
         lowerColor: 0xaa3333,
@@ -407,9 +414,6 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     // }})
 
     updateObjects[dimensionKey]()
-    console.log(dimensionKey);
-    console.log(ship3D.ship.baseObjects[elementClickedName].boxDimensions);
-    console.log(ship3D.ship.derivedObjects[elementClickedName].referenceState);
 
 }
 
@@ -475,7 +479,7 @@ document.getElementById('file-input').addEventListener('change', (e) => {
         // Changing the initial state db to the new JSON
         Object.assign(stateDb, resp.json)
 
-        ship = new Vessel.Ship(resp.json);
+        ship = new Ship(resp.json);
         ship3D = new Ship3D(ship, {
             upperColor: 0x33aa33,
             lowerColor: 0xaa3333,
@@ -491,6 +495,20 @@ document.getElementById('file-input').addEventListener('change', (e) => {
 
 }, false);
 
+const changeShip = function(state, objStyle = { upperColor: 0x33aa33, lowerColor: 0xaa3333,
+                                                    hullOpacity: 1, deckOpacity: 1, objectOpacity: 1
+                                                }) {
+                                                    const ship = new Vessel.Ship(state);
+                                                    ship3D = new Ship3D(ship, {
+                                                        upperColor: 0x33aa33,
+                                                        lowerColor: 0xaa3333,
+                                                        hullOpacity: 1,
+                                                        deckOpacity: 1,
+                                                        objectOpacity: 1
+                                                    });
+                                                    zUpCont.add(ship3D);                                         
+}
+
 document.getElementById('file-export-btn').addEventListener('click', function(e) {
     
     Vessel.downloadShip(ship)
@@ -501,3 +519,5 @@ document.getElementById('file-export-btn').addEventListener('click', function(e)
 // Initialize the animation
 init();
 animate();
+
+// export default {stateDb, defaultCompartment};
