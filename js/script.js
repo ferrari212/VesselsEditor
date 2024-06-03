@@ -182,7 +182,7 @@ function isColorDark(color) {
     let luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
 
     // Return true if the color is dark
-    return luminance < 128;
+    return luminance < 0.128;
 
 }
 
@@ -202,14 +202,14 @@ function onMouseDoubleClick (event) {
         
         elementClicked = intersected.name
         const element = zUpCont.getObjectByName(elementClicked)
-        console.log(element.position);
-        console.log(element.scale);
 
+        // TODO: Apply the DRY principle to the color code assigning @FELDEO
         // Showing the color
         const color = new THREE.Color(element.currentHex)
-        colorBox.classList.remove("bg-white")
         colorBox.style.backgroundColor = "#" +  color.getHexString();
-        isColorDark(color) ? colorBox.classList.add('placeholder-white') : colorBox.classList.remove('placeholder-white')
+        
+        isColorDark(color) ? colorBox.classList.add('placeholder-gray-100') : colorBox.classList.remove('placeholder-gray-100')
+        isColorDark(color) ? colorBox.classList.add('text-white') : colorBox.classList.remove('text-white')
 
         selectedName.value = elementClicked
         // elements considering the zUpCont coordinates
@@ -219,13 +219,18 @@ function onMouseDoubleClick (event) {
         posX.value = element.position.x.toFixed(1)
         posY.value = element.position.y.toFixed(1)
         posZ.value = element.position.z.toFixed(1)
+        
         return
     
     }
 
     selectedName.value = ""
-    colorBox.style.backgroundColor = "#FFF"
-    colorBox.classList.remove('placeholder-white')
+    colorBox.style.backgroundColor = ""
+    colorBox.classList.remove('placeholder-gray-100')
+    colorBox.classList.remove('text-white')
+    colorBox.value = ""
+    // colorBox.style.backgroundColor = "#FFF"
+    // colorBox.classList.remove('placeholder-gray-100')
     h.value = ""
     l.value = ""
     b.value = ""
@@ -354,6 +359,44 @@ document.getElementById('delete-block').addEventListener('click', () => {
 
 });
 
+function changeTankColor (valueString, elementClickedName) {
+
+    if(!elementClicked){
+        showMessage("Error: No Element Selected");
+        return
+    }
+
+    const block = scene.getObjectByName(elementClickedName);
+
+    const namesObject = THREE.Color.NAMES
+
+    if (namesObject.hasOwnProperty(valueString)) {
+
+        const colorBox = document.getElementById('color')
+
+        // Erase to the default format of colors first
+        colorBox.classList.remove('placeholder-gray-100')
+        colorBox.classList.remove('text-white')
+
+        block.currentHex = namesObject[valueString]
+
+        // TODO: Apply the DRY principle to the color code assigning @FELDEO
+        const color = new THREE.Color(valueString)
+        colorBox.style.backgroundColor = "#" +  color.getHexString();
+
+
+        if (isColorDark(color) && !colorBox.classList.contains("text-white")) {
+            colorBox.classList.add('text-white')
+            colorBox.classList.add('placeholder-gray-100')
+        }
+    
+    }
+
+    
+    
+
+}
+
 function changeVariableValue(valueString,  dimension, elementClickedName) {
     
     if(!elementClicked){
@@ -422,6 +465,12 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     console.log(ship3D.ship.derivedObjects[elementClickedName].referenceState);
 
 }
+
+document.getElementById('color').addEventListener('input', (event) => {
+
+    changeTankColor(event.target.value, elementClicked)
+
+});
 
 document.getElementById('height').addEventListener('input', (event) => {
     
