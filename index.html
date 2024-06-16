@@ -85,7 +85,6 @@
         id="color"
         placeholder=" Tank Color"
         class="input input-bordered input-primary w-32 max-w-xs mb-2.5"
-        disabled
       />
       <h2 class="text-sm font-bold italic">Dimensions</h2>
       <input
@@ -466,12 +465,15 @@
           </div>
           <div class="flex-1 lg:flex-col lg:w-5/12">
             <h2 class="text-sm font-bold italic mb-8">Output</h2>
-            <div id="plots" style = "position:absolute;top:50px;left:400px;height:600px;width:1220px;overflow:auto">  
-                <!-- <div id = "hull_sac" class = "placeholder" style = "width:1200px;height:300px" title = "Sectional Area Curve"></div>   -->
+            <div
+              class="bg-red-600 text-white px-4 py-2 rounded"
+            >Hull creation temporarily not available. Please, click under the Generate Ship button on the left corner to create a generic Wigley hull ship</div>
+            <!-- <div id="plots" style = "position:absolute;top:50px;left:400px;height:600px;width:1220px;overflow:auto">  
+                <div id = "hull_sac" class = "placeholder" style = "width:1200px;height:300px" title = "Sectional Area Curve"></div>  
                 <div id = "hull_profile_side" class = "placeholder" style = "width:1200px;height:150px" title = "Lateral view: Profile Curve and Side Curve"></div>
                 <div id = "hull_wl_deck" class = "placeholder" style = "width:1200px;height:150px" title = "Top view: Deck Curve, Waterline Curve and Base Curve"></div>
                 <div id = "cross_sections" class = "placeholder" style = "width:1200px;height:600px" title = "Cross Sections view: Afterward Sections (left) and Foreward Sections (rigth)"></div>    
-            </div>
+            </div> -->
           </div>
           <!-- <input
             type="text"

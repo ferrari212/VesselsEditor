@@ -1,8 +1,9 @@
-    import { zUpCont } from "../script.js"
-    import { stateDb } from "../dataBase.js"
-    import { Ship } from "../script.js";
-    import { Ship3D } from "../../libs/3D_engine/Ship3D.js"
-    
+import { zUpCont } from "../script.js"
+import { stateDb } from "../dataBase.js"
+import { Ship } from "../../libs/vessel.module.js"
+// import * as Vessel from "../../libs/vessel.module.js"
+import { Ship3D } from "../../libs/3D_engine/Ship3D.js"
+import { showMessage } from "./supportFunctions.js";
 
 const toggleClass = (classList, addClass, removeClass) => {
     classList.remove(removeClass)
@@ -33,65 +34,16 @@ document.getElementById('submitForm').addEventListener('click', function() {
     // setting up the stateDb parameters
     stateDb.baseObjects = [{}]
     stateDb.derivedObject = [{}]
-    stateDb.designState.calculationParameters = {
-        "BWL": 5,
-        "LWL_design": 100,
-        "Draft_design": 7,
-    }
-    stateDb.structure.hull.attributes = {
-        "BOA": 5,
-        "Depth": 7,
-        "LOA": 100,
-    }
+   
     stateDb.structure.hull.halfBreadths = {        
         "waterlines": halfBreadths.waterlines,
         "stations": halfBreadths.stations,
         "table": halfBreadths.table,
     }
-    stateDb.baseObjects = [
-        {
-            "id": "Tank_1", 
-            "affiliations": {},
-            "boxDimensions": {
-                "length": 10.0,
-                "breadth": 10.0,
-                "height": 10.0
-            },
-            "capabilities": {},
-            "baseState": {
-                "fullness": 0
-            },
-            "weightInformation": {
-                "contentDensity": 850,
-                "volumeCapacity": 145,
-                "lightweight": 10000,
-                "fullnessCGMapping": {
-                "fullnesses": [0, 0.25, 0.5, 0.75, 1],
-                "cgs": [
-                    [0, 0, 0.8],
-                    [0, 0, 0.347013783],
-                    [0, 0, 0.455846422],
-                    [0, 0, 0.6195241],
-                    [0, 0, 0.8]
-                ]
-                }
-            }
-        }
-    ]
-    stateDb.derivedObjects = [
-        {
-            "id": "Tank_1", 
-            "baseObject": "Tank_1", 
-            "affiliations": {
-                "group": "cargo tanks",
-            },
-            "referenceState": {
-                "xCentre": 5.0,
-                "yCentre": 0.0,
-                "zBase": 0.0
-            },
-        }
-    ]
+    
+    stateDb.baseObjects = []
+    stateDb.derivedObjects = []
+
     zUpCont.remove(...zUpCont.children)
 
     const ship = new Ship(stateDb);
@@ -105,7 +57,7 @@ document.getElementById('submitForm').addEventListener('click', function() {
     zUpCont.add(ship3D);
 
     toggleClass(classList, "hidden", "block")
-    // document.getElementById('overlay').style.display = 'none';  // Hide the overlay
+
 });
 
 // First guess of the ship main dimensions according to the input table
@@ -161,7 +113,7 @@ function first_guess() {
 const first_guess_elements = [...document.getElementsByClassName("first_guess")]
 first_guess_elements.forEach(input => input.addEventListener('input', first_guess));
 
-function wigley_formula (L, B, T) {
+function wigley_formula(L, B, T) {
     /*
     This is a partial and simplified approach to the water lines using
     the simplified wigley formulas.
@@ -174,8 +126,8 @@ function wigley_formula (L, B, T) {
     The formula was modified for an non dimensional format
     */
 
-    const uSteps = 20;
-    const vSteps = 40;
+    const waterLineSteps = 20;
+    const stationSteps = 40;
 
     const halfBreadths = {
         "waterlines": [],
@@ -183,19 +135,19 @@ function wigley_formula (L, B, T) {
         "table": [],
     }
 
-    for (let i = 0; i <= uSteps; i++) {
+    for (let i = 0; i <= waterLineSteps; i++) {
         
-        const u = i / uSteps;
-        halfBreadths.waterlines.push(u)
+        const wl = i / waterLineSteps;
+        halfBreadths.waterlines.push(wl)
 
         const valuesArray = []
         
-        for (let j = 0; j <= vSteps; j++) {
+        for (let j = 0; j <= stationSteps; j++) {
 
-            const v = j / vSteps;
+            const st = j / stationSteps;
             
-    
-            const y = (1 / 2) * 4 * v * (1 - v) * (u) ** 2;
+            const y = (1 - ( 2 * (st - 0.5))** 2) * (1 - (wl - 1)** 2);
+            // const y = 4 * st * (1 - st) * Math.sqrt(wl);
     
             valuesArray.push(y)
         }
@@ -203,8 +155,8 @@ function wigley_formula (L, B, T) {
         halfBreadths.table.push(valuesArray)
     }
 
-    // halfBreadths.stations = Array.from({length: uSteps}, (_, i) =>  i / uSteps);
-    halfBreadths.stations = Array.from({length: vSteps + 1}, (_, j) => j / vSteps);
+    // halfBreadths.stations = Array.from({length: waterLineSteps}, (_, i) =>  i / waterLineSteps);
+    halfBreadths.stations = Array.from({length: stationSteps + 1}, (_, j) => j / stationSteps);
 
     // halfBreadths.stations.forEach((station) => {
     //     const valuesArray = []

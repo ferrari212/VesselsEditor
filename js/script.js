@@ -9,8 +9,6 @@ import renderRayCaster from "../libs/3D_engine/renderRayCaster.js"
 
 // Importing Vessels.js library
 import * as Vessel from "../libs/vessel.module.js";
-export const Ship = Vessel.Ship
-// import * as Vessel from "../libs/vessel.module.js";
 
 // Importing the minimum database that represents a ship
 import { stateDb } from "./dataBase.js";
@@ -23,6 +21,10 @@ import { readSingleFile } from "./scripts/dataExchangeFunctions.js";
 
 // Importing Ship3D library
 import { Ship3D } from "../libs/3D_engine/Ship3D.js";
+
+// Supporting functions
+import { showMessage } from "./scripts/supportFunctions.js";
+import { assignColorToComponent } from "./scripts/supportFunctions.js";
 
 // Basic Three.js setup
 let scene, camera, renderer;
@@ -87,7 +89,7 @@ function init() {
     ({ scene, camera, renderer } = setUpThreeJs());
 
     Object.assign(stateDb, defaultCompartment)
-    ship = new Ship(stateDb);
+    ship = new Vessel.Ship(stateDb);
     ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
         lowerColor: 0xaa3333,
@@ -186,18 +188,6 @@ function onMouseMove( event ) {
 
 }
 
-// Function to check if a color is dark
-function isColorDark(color) {
-    // input a color THREE.Color element
-
-    // Use the luminance formula to determine brightness
-    let luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
-
-    // Return true if the color is dark
-    return luminance < 128;
-
-}
-
 function onMouseDoubleClick (event) {
 
     const selectedName = document.getElementById('selectedName')
@@ -214,14 +204,8 @@ function onMouseDoubleClick (event) {
         
         elementClicked = intersected.name
         const element = zUpCont.getObjectByName(elementClicked)
-        console.log(element.position);
-        console.log(element.scale);
 
-        // Showing the color
-        const color = new THREE.Color(element.currentHex)
-        colorBox.classList.remove("bg-white")
-        colorBox.style.backgroundColor = "#" +  color.getHexString();
-        isColorDark(color) ? colorBox.classList.add('placeholder-white') : colorBox.classList.remove('placeholder-white')
+        assignColorToComponent(colorBox, element.currentHex)
 
         selectedName.value = elementClicked
         // elements considering the zUpCont coordinates
@@ -231,13 +215,18 @@ function onMouseDoubleClick (event) {
         posX.value = element.position.x.toFixed(1)
         posY.value = element.position.y.toFixed(1)
         posZ.value = element.position.z.toFixed(1)
+        
         return
     
     }
 
     selectedName.value = ""
-    colorBox.style.backgroundColor = "#FFF"
-    colorBox.classList.remove('placeholder-white')
+    colorBox.style.backgroundColor = ""
+    colorBox.classList.remove('placeholder-gray-100')
+    colorBox.classList.remove('text-white')
+    colorBox.value = ""
+    // colorBox.style.backgroundColor = "#FFF"
+    // colorBox.classList.remove('placeholder-gray-100')
     h.value = ""
     l.value = ""
     b.value = ""
@@ -248,36 +237,7 @@ function onMouseDoubleClick (event) {
 
 }
 
-// Generic function for error shown display
-function showMessage(errorMessageText) {
-
-    const errorContainer = document.getElementById('errorContainer');
-    const errorMessage = document.createElement('div');
-
-    errorMessage.textContent = errorMessageText;
-    errorMessage.className = 'bg-red-600 text-white px-4 py-2 rounded opacity-0 transition-opacity duration-3000';
-
-    // Append the new error message to the container
-    errorContainer.appendChild(errorMessage);
-
-    // Show the error message
-    setTimeout(() => {
-        errorMessage.classList.replace('opacity-0', 'opacity-100');
-    }, 10); // Delay to ensure the element is rendered before starting the animation
-
-    // Hide and remove the error message after 3 seconds
-    setTimeout(() => {
-        errorMessage.classList.replace('opacity-100', 'opacity-0');
-        setTimeout(() => errorMessage.remove(), 1000); // Remove after fade-out
-    }, 3000);
-
-}
-
-// ------------------------------------------------ //
-//
-// Event listeners for creating and deleting blocks //
-//
-// ------------------------------------------------ //
+// Event listeners for creating and deleting blocks
 document.getElementById('create-block').addEventListener('click', () => {
     
     // Remove the Ship 3D
@@ -307,7 +267,7 @@ document.getElementById('create-block').addEventListener('click', () => {
     stateDb.baseObjects.push(baseObjects)
     stateDb.derivedObjects.push(derivedObjects)
 
-    ship = new Ship(stateDb);
+    ship = new Vessel.Ship(stateDb);
     ship3D = new Ship3D(ship, {
         upperColor: 0x33aa33,
         lowerColor: 0xaa3333,
@@ -324,7 +284,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     
     
     if ( !elementClicked ) {
-        showMessage("Error: No element selected");
+        showMessage();
         return
     }    
     
@@ -372,10 +332,39 @@ document.getElementById('delete-block').addEventListener('click', () => {
 
 });
 
+function changeTankColor (valueString, elementClickedName) {
+
+    if(!elementClicked){
+        showMessage();
+        return
+    }
+
+    const block = scene.getObjectByName(elementClickedName);
+
+    const namesObject = THREE.Color.NAMES
+
+    // Change to lower case for increase reliability
+    valueString = valueString.toLowerCase()
+
+    if (namesObject.hasOwnProperty(valueString)) {
+
+        const colorBox = document.getElementById('color')
+
+        block.currentHex = namesObject[valueString]
+
+        assignColorToComponent(colorBox, valueString)
+    
+    }
+
+    
+    
+
+}
+
 function changeVariableValue(valueString,  dimension, elementClickedName) {
     
     if(!elementClicked){
-        showMessage("Error: No Element Selected");
+        showMessage();
         return
     }
 
@@ -435,8 +424,17 @@ function changeVariableValue(valueString,  dimension, elementClickedName) {
     // }})
 
     updateObjects[dimensionKey]()
+    console.log(dimensionKey);
+    console.log(ship3D.ship.baseObjects[elementClickedName].boxDimensions);
+    console.log(ship3D.ship.derivedObjects[elementClickedName].referenceState);
 
 }
+
+document.getElementById('color').addEventListener('input', (event) => {
+
+    changeTankColor(event.target.value, elementClicked)
+
+});
 
 document.getElementById('height').addEventListener('input', (event) => {
     
@@ -500,7 +498,7 @@ document.getElementById('file-input').addEventListener('change', (e) => {
         // Changing the initial state db to the new JSON
         Object.assign(stateDb, resp.json)
 
-        ship = new Ship(resp.json);
+        ship = new Ship.Vessel(resp.json);
         ship3D = new Ship3D(ship, {
             upperColor: 0x33aa33,
             lowerColor: 0xaa3333,
