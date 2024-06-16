@@ -8,8 +8,7 @@ import { OrbitControls } from "../libs/3D_engine/OrbitControls.js";
 import renderRayCaster from "../libs/3D_engine/renderRayCaster.js"
 
 // Importing Vessels.js library
-import * as Vessel from "../libs/vessel.module.min.js";
-// import * as Vessel from "../libs/vessel.module.js";
+import * as Vessel from "../libs/vessel.module.js";
 
 // Importing the minimum database that represents a ship
 import { stateDb } from "./dataBase.js";
@@ -28,7 +27,8 @@ import { showMessage } from "./scripts/supportFunctions.js";
 import { assignColorToComponent } from "./scripts/supportFunctions.js";
 
 // Basic Three.js setup
-let zUpCont, scene, camera, renderer;
+let scene, camera, renderer;
+export let zUpCont
 
 // Raycaster Parameters
 let intersected, mouse, elementClicked, parametersMenu;
@@ -97,7 +97,6 @@ function init() {
         deckOpacity: 1,
         objectOpacity: 1
     });
-    scene.add(ship3D);
     
     // Adding the ship3D into the zUp function
     zUpCont.add(ship3D);
@@ -141,6 +140,17 @@ function setUpThreeJs () {
     // Adding the axesHelper
     const axesHelper = new THREE.AxesHelper( 3 );
     scene.add( axesHelper );
+
+    // Resizing the scene when object resize
+    window.addEventListener( 'resize', onWindowResize, false );
+    function onWindowResize() {
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
 
     return {scene, camera, renderer}
 
@@ -488,7 +498,7 @@ document.getElementById('file-input').addEventListener('change', (e) => {
         // Changing the initial state db to the new JSON
         Object.assign(stateDb, resp.json)
 
-        ship = new Vessel.Ship(resp.json);
+        ship = new Ship.Vessel(resp.json);
         ship3D = new Ship3D(ship, {
             upperColor: 0x33aa33,
             lowerColor: 0xaa3333,
@@ -504,6 +514,20 @@ document.getElementById('file-input').addEventListener('change', (e) => {
 
 }, false);
 
+const changeShip = function(state, objStyle = { upperColor: 0x33aa33, lowerColor: 0xaa3333,
+                                                    hullOpacity: 1, deckOpacity: 1, objectOpacity: 1
+                                                }) {
+                                                    const ship = new Vessel.Ship(state);
+                                                    ship3D = new Ship3D(ship, {
+                                                        upperColor: 0x33aa33,
+                                                        lowerColor: 0xaa3333,
+                                                        hullOpacity: 1,
+                                                        deckOpacity: 1,
+                                                        objectOpacity: 1
+                                                    });
+                                                    zUpCont.add(ship3D);                                         
+}
+
 document.getElementById('file-export-btn').addEventListener('click', function(e) {
     
     Vessel.downloadShip(ship)
@@ -514,3 +538,5 @@ document.getElementById('file-export-btn').addEventListener('click', function(e)
 // Initialize the animation
 init();
 animate();
+
+// export default {stateDb, defaultCompartment};

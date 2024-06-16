@@ -1,11 +1,12 @@
-import * as THREE from "../libs/three.js";
+import * as THREE from "../../libs/three.js";
 
 // Generic function for error display
-export function showMessage(
-    componentText="errorContainer",
-    errorMessageText="Error: No element selected"
-) {
-    const errorContainer = document.getElementById('errorContainer');
+export function showMessage({
+        componentText = "errorContainer",
+        errorMessageText = "Error: No element selected",
+        timeOut = 1000
+    }) {
+    const errorContainer = document.getElementById(componentText);
     const errorMessage = document.createElement('div');
 
     errorMessage.textContent = errorMessageText;
@@ -23,8 +24,8 @@ export function showMessage(
     // Hide and remove the error message after 3 seconds
     setTimeout(() => {
         errorMessage.classList.replace('opacity-100', 'opacity-0');
-        setTimeout(() => errorMessage.remove(), 1000); // Remove after fade-out
-    }, 3000);
+        setTimeout(() => errorMessage.remove(), timeOut); // Remove after fade-out
+    }, timeOut + 2000);
 }
 
 // Function to check if a color is dark
