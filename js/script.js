@@ -203,13 +203,7 @@ function onMouseDoubleClick (event) {
         elementClicked = intersected.name
         const element = zUpCont.getObjectByName(elementClicked)
 
-        // TODO: Apply the DRY principle to the color code assigning @FELDEO
-        // Showing the color
-        const color = new THREE.Color(element.currentHex)
-        colorBox.style.backgroundColor = "#" +  color.getHexString();
-        
-        isColorDark(color) ? colorBox.classList.add('placeholder-gray-100') : colorBox.classList.remove('placeholder-gray-100')
-        isColorDark(color) ? colorBox.classList.add('text-white') : colorBox.classList.remove('text-white')
+        assignColorToComponent(colorBox, element.currentHex)
 
         selectedName.value = elementClicked
         // elements considering the zUpCont coordinates
@@ -359,6 +353,20 @@ document.getElementById('delete-block').addEventListener('click', () => {
 
 });
 
+function assignColorToComponent(component, valueString) {
+    /* 
+    Function receive a component and an color string
+    if the color is dark the text will appear as white and placeholder as gray
+    */
+
+    const color = new THREE.Color(valueString)
+    component.style.backgroundColor = "#" +  color.getHexString();
+
+    isColorDark(color) ? component.classList.add('placeholder-gray-100') : component.classList.remove('placeholder-gray-100')
+    isColorDark(color) ? component.classList.add('text-white') : component.classList.remove('text-white')
+
+}
+
 function changeTankColor (valueString, elementClickedName) {
 
     if(!elementClicked){
@@ -377,21 +385,9 @@ function changeTankColor (valueString, elementClickedName) {
 
         const colorBox = document.getElementById('color')
 
-        // Erase to the default format of colors first
-        colorBox.classList.remove('placeholder-gray-100')
-        colorBox.classList.remove('text-white')
-
         block.currentHex = namesObject[valueString]
 
-        // TODO: Apply the DRY principle to the color code assigning @FELDEO
-        const color = new THREE.Color(valueString)
-        colorBox.style.backgroundColor = "#" +  color.getHexString();
-
-
-        if (isColorDark(color) && !colorBox.classList.contains("text-white")) {
-            colorBox.classList.add('text-white')
-            colorBox.classList.add('placeholder-gray-100')
-        }
+        assignColorToComponent(colorBox, valueString)
     
     }
 
