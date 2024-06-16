@@ -8,7 +8,7 @@ import { OrbitControls } from "../libs/3D_engine/OrbitControls.js";
 import renderRayCaster from "../libs/3D_engine/renderRayCaster.js"
 
 // Importing Vessels.js library
-import * as Vessel from "../libs/vessel.module.js";
+import * as Vessel from "../libs/vessel.module.min.js";
 
 // Importing the minimum database that represents a ship
 import { stateDb } from "./dataBase.js";

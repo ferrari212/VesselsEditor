@@ -1,7 +1,7 @@
 import { zUpCont } from "../script.js"
 import { stateDb } from "../dataBase.js"
-import { Ship } from "../../libs/vessel.module.js"
-// import * as Vessel from "../../libs/vessel.module.js"
+import { Ship } from "../../libs/vessel.module.min.js"
+// import * as Vessel from "../../libs/vessel.module.min.js"
 import { Ship3D } from "../../libs/3D_engine/Ship3D.js"
 import { showMessage } from "./supportFunctions.js";
 
