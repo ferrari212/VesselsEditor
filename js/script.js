@@ -370,6 +370,9 @@ function changeTankColor (valueString, elementClickedName) {
 
     const namesObject = THREE.Color.NAMES
 
+    // Change to lower case for increase reliability
+    valueString = valueString.toLowerCase()
+
     if (namesObject.hasOwnProperty(valueString)) {
 
         const colorBox = document.getElementById('color')
