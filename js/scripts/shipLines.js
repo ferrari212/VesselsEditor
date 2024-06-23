@@ -10,10 +10,80 @@ const toggleClass = (classList, addClass, removeClass) => {
     classList.add(addClass)
 }
 
+
+const plotFuntion = (halfBreadths) => {
+
+    // const data = [
+    //     {
+    //         x: [1, 2, 3, 4],
+    //         y: [10, 15, 13, 17],
+    //         mode: 'scatter',
+    //         // mode: 'lines',
+    //         line: {width: 3, shape: 'spline'}
+    //     }
+    // ]
+    const data = []
+    const stations = halfBreadths.stations
+
+    // Middle index for returning in negative position for visualization purpose
+    const middleIndex = Math.floor(stations.length / 2); 
+
+    stations.forEach((station, i) => {
+
+        const multiplier = middleIndex > i ? 1 : -1
+
+        data.push(
+            {
+                x: halfBreadths.table.map(t => {return multiplier * t[i]}),
+                y: halfBreadths.waterlines,
+                name: station.toString(),
+                mode: 'scatter',
+                line: {shape: 'spline'}
+            }
+        )
+    })
+
+    var layout = {
+        title: "Frames",
+        width: 500,
+        height: 500,
+        xaxis: {
+          title: 'Y (m)',
+          showgrid: true,
+          zeroline: true,
+          range: [-1, 1]
+        },
+        yaxis: {
+          title: 'Z (m)',
+          showline: true,
+          scaleanchor: 'x',
+          scaleratio: 1
+        },
+        legend: {
+            title: {
+                text: 'X (m)'
+            }
+        }
+    }
+
+    const plotConfig = {
+        modeBarButtonsToRemove: ["zoom2d", "pan2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d"]
+    }
+
+
+    Plotly.newPlot("plots", data, layout, plotConfig)
+    
+}
+
 document.getElementById('openForm').addEventListener('click', function() {
     const overlayElement = document.getElementById('overlay');
     const classList = overlayElement.classList
     
+    const halfBreadths = wigley_formula(100, 5, 7)
+
+    plotFuntion(halfBreadths)
+
+    console.log(halfBreadths);
 
     classList.contains("hidden") ? toggleClass(classList, "block", "hidden") : toggleClass(classList, "hidden", "block")
 
@@ -58,8 +128,6 @@ document.getElementById('submitForm').addEventListener('click', function() {
     zUpCont.add(ship3D);
 
     toggleClass(classList, "hidden", "block")
-
-    debugger
 
 });
 
