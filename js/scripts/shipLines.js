@@ -13,6 +13,7 @@ const toggleClass = (classList, addClass, removeClass) => {
 document.getElementById('openForm').addEventListener('click', function() {
     const overlayElement = document.getElementById('overlay');
     const classList = overlayElement.classList
+    
 
     classList.contains("hidden") ? toggleClass(classList, "block", "hidden") : toggleClass(classList, "hidden", "block")
 
@@ -57,6 +58,8 @@ document.getElementById('submitForm').addEventListener('click', function() {
     zUpCont.add(ship3D);
 
     toggleClass(classList, "hidden", "block")
+
+    debugger
 
 });
 
@@ -147,7 +150,6 @@ function wigley_formula(L, B, T) {
             const st = j / stationSteps;
             
             const y = (1 - ( 2 * (st - 0.5))** 2) * (1 - (wl - 1)** 2);
-            // const y = 4 * st * (1 - st) * Math.sqrt(wl);
     
             valuesArray.push(y)
         }
@@ -155,25 +157,8 @@ function wigley_formula(L, B, T) {
         halfBreadths.table.push(valuesArray)
     }
 
-    // halfBreadths.stations = Array.from({length: waterLineSteps}, (_, i) =>  i / waterLineSteps);
     halfBreadths.stations = Array.from({length: stationSteps + 1}, (_, j) => j / stationSteps);
 
-    // halfBreadths.stations.forEach((station) => {
-    //     const valuesArray = []
-    //     halfBreadths.waterlines.forEach((waterline) => {
-
-    //         // Coefficients
-
-    //         const a = (1 - Math.pow(2 * station / L, 2))
-    //         const b = (1 - Math.pow(2 * waterline / T, 2))
-
-    //         valuesArray.push( a * b /2 )
-
-    //     })
-
-    //     halfBreadths.table.push(valuesArray)
-
-    // })
 
     return halfBreadths
 
