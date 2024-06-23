@@ -6,6 +6,8 @@
     <title>Interactive 3D Block Creator</title>
     <link rel="stylesheet" href="./css/styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.25.2.min.js" charset="utf-8"></script>
+    <!-- <script src="./libs/plotly.min.js" charset="utf-8"></script> -->
     <style>
       /* Additional style to make the file input button round and position it */
       #file-upload-btn {
@@ -133,9 +135,9 @@
     <div id="canvas"></div>
 
     <!-- Hull form input -->
-    <div id="overlay" class="absolute top-0 left-0 z-40 w-full hidden">
+    <div id="overlay" class="absolute top-0 left-0 z-40 w-full h-full hidden">
       <div class="bg-white p-5 rounded-lg shadow-lg m-10">
-        <form id="dataForm" class="grid grid-cols-2 gap-4">
+        <form id="dataForm" class="grid grid-cols-3 gap-4">
           <!-- Form fields go here -->
           <div class="flex-1 lg:flex-auto lg:w-7/12">
             <h2 class="text-sm font-bold italic mb-6">Input</h2>
@@ -463,11 +465,14 @@
               Generate Ship
             </button>
           </div>
-          <div class="flex-1 lg:flex-col lg:w-5/12">
+          <div class="flex-1 lg:flex-col lg:w-5/12 col-span-2">
             <h2 class="text-sm font-bold italic mb-8">Output</h2>
             <div
-              class="bg-red-600 text-white px-4 py-2 rounded"
-            >Hull creation temporarily not available. Please, click under the Generate Ship button on the left corner to create a generic Wigley hull ship</div>
+              class="bg-yellow-200 px-4 py-2 rounded border-gray-800"
+            >
+            <strong>Hull Creation Temporarily Unavailable</strong>
+            <p>Visualization is currently limited. Please click the "Generate Ship" button located in the lower left corner to create a generic Wigley hull ship.</p></div>
+            <div id="plots"></div>
             <!-- <div id="plots" style = "position:absolute;top:50px;left:400px;height:600px;width:1220px;overflow:auto">  
                 <div id = "hull_sac" class = "placeholder" style = "width:1200px;height:300px" title = "Sectional Area Curve"></div>  
                 <div id = "hull_profile_side" class = "placeholder" style = "width:1200px;height:150px" title = "Lateral view: Profile Curve and Side Curve"></div>
