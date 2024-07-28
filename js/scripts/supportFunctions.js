@@ -5,7 +5,7 @@ export function showMessage({
         componentText = "errorContainer",
         errorMessageText = "Error: No element selected",
         timeOut = 1000
-    }) {
+    } = {}) {
     const errorContainer = document.getElementById(componentText);
     const errorMessage = document.createElement('div');
 

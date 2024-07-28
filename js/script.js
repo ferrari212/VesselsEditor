@@ -486,7 +486,7 @@ document.getElementById('file-input').addEventListener('change', (e) => {
 
         if (resp.status == 400) {
 
-            showMessage(resp.message);
+            showMessage({errorMessageText: resp.message});
     
             return
         
@@ -498,7 +498,7 @@ document.getElementById('file-input').addEventListener('change', (e) => {
         // Changing the initial state db to the new JSON
         Object.assign(stateDb, resp.json)
 
-        ship = new Ship.Vessel(resp.json);
+        ship = new Vessel.Ship(resp.json);
         ship3D = new Ship3D(ship, {
             upperColor: 0x33aa33,
             lowerColor: 0xaa3333,

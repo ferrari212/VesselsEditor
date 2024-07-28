@@ -137,10 +137,10 @@
     <!-- Hull form input -->
     <div id="overlay" class="absolute top-0 left-0 z-40 w-full h-full hidden">
       <div class="bg-white p-5 rounded-lg shadow-lg m-10">
-        <form id="dataForm" class="grid grid-cols-3 gap-4">
+        <form id="dataForm" class="grid grid-cols-12 gap-4">
           <!-- Form fields go here -->
-          <div class="flex-1 lg:flex-auto lg:w-7/12">
-            <h2 class="text-sm font-bold italic mb-6">Input</h2>
+          <div class="flex-1 col-span-4">
+            <h2 class="text-lg font-bold italic mb-6">Input</h2>
             <div class="pb-6">
               <p
                 style="cursor: pointer"
@@ -149,15 +149,15 @@
                 Length Overall :
                 <input
                   type="text"
-                  id="length_oa_first_guess"
+                  class="text_input"
                   value="100"
                   style="position: absolute; left: 210px; width: 50px"
-                  class="first_guess"
+                  name="LOA"
                   disabled
                 />
                 <input
                   type="range"
-                  id="slide_length_oa_first_guess"
+                  class="slide_input"
                   min="60"
                   value="100"
                   max="140"
@@ -168,7 +168,7 @@
                     width: 100px;
                     height: 17.5px;
                   "
-                  class="first_guess"
+                  name="LOA"
                 />
               </p>
               <p
@@ -178,15 +178,16 @@
                 Breadth :
                 <input
                   type="text"
-                  id="breadth_first_guess"
+                  class="text_input"
                   value="14"
                   style="position: absolute; left: 210px; width: 50px"
-                  class="first_guess"
+                  class="text_input"
+                  name="Breadth"
                   disabled
                 />
                 <input
                   type="range"
-                  id="slide_breadth_first_guess"
+                  class="slide_input"
                   min="10"
                   value="14"
                   max="18"
@@ -197,7 +198,7 @@
                     width: 100px;
                     height: 17.5px;
                   "
-                  class="first_guess"
+                  name="Breadth"
                 />
               </p>
               <p
@@ -207,15 +208,16 @@
                 Depth :
                 <input
                   type="text"
-                  id="depth_first_guess"
+                  class="text_input"
                   value="8.2"
                   style="position: absolute; left: 210px; width: 50px"
                   class="first_guess"
+                  name="Depth"
                   disabled
                 />
                 <input
                   type="range"
-                  id="slide_depth_first_guess"
+                  class="slide_input"
                   min="4"
                   value="8.2"
                   max="14"
@@ -226,7 +228,7 @@
                     width: 100px;
                     height: 17.5px;
                   "
-                  class="first_guess"
+                  name="Depth"
                 />
               </p>
               <p
@@ -236,15 +238,16 @@
                 Draft :
                 <input
                   type="text"
-                  id="draft_first_guess"
+                  class="text_input"
                   value="4.5"
                   style="position: absolute; left: 210px; width: 50px"
                   class="first_guess"
+                  name="Draft"
                   disabled
                 />
                 <input
                   type="range"
-                  id="slide_draft_first_guess"
+                  class="slide_input"
                   min="4"
                   value="4.5"
                   max="10"
@@ -255,7 +258,7 @@
                     width: 100px;
                     height: 17.5px;
                   "
-                  class="first_guess"
+                  name="Draft"
                 />
               </p>
               <p
@@ -265,15 +268,15 @@
                 Displacement :
                 <input
                   type="text"
-                  id="displacement_first_guess"
+                  class="text_input"
                   value="4506"
                   style="position: absolute; left: 210px; width: 50px"
-                  class="first_guess"
+                  name="Displacement"
                   disabled
                 />
                 <input
                   type="range"
-                  id="slide_displacement_first_guess"
+                  class="slide_input"
                   min="4000"
                   value="4506"
                   max="14000"
@@ -284,7 +287,7 @@
                     width: 100px;
                     height: 17.5px;
                   "
-                  class="first_guess"
+                  name="Displacement"
                 />
               </p>
               <div
@@ -465,14 +468,18 @@
               Generate Ship
             </button>
           </div>
-          <div class="flex-1 lg:flex-col lg:w-5/12 col-span-2">
+          <div class="flex-1 col-span-8">
             <h2 class="text-sm font-bold italic mb-8">Output</h2>
             <div
               class="bg-yellow-200 px-4 py-2 rounded border-gray-800"
             >
-            <strong>Hull Creation Temporarily Unavailable</strong>
-            <p>Visualization is currently limited. Please click the "Generate Ship" button located in the lower left corner to create a generic Wigley hull ship.</p></div>
-            <div id="plots"></div>
+              <strong>Hull Creation Temporarily Unavailable</strong>
+              <p>Visualization is currently limited. Please click the "Generate Ship" button located in the lower left corner to create a generic Wigley hull ship.</p>
+            </div>
+            <div>
+              <div id="plots_waterline" class="overflow-auto flex items-center justify-center"></div>
+              <div id="plots_station" class="overflow-auto flex items-center justify-center"></div>
+            </div>
             <!-- <div id="plots" style = "position:absolute;top:50px;left:400px;height:600px;width:1220px;overflow:auto">  
                 <div id = "hull_sac" class = "placeholder" style = "width:1200px;height:300px" title = "Sectional Area Curve"></div>  
                 <div id = "hull_profile_side" class = "placeholder" style = "width:1200px;height:150px" title = "Lateral view: Profile Curve and Side Curve"></div>
@@ -480,6 +487,7 @@
                 <div id = "cross_sections" class = "placeholder" style = "width:1200px;height:600px" title = "Cross Sections view: Afterward Sections (left) and Foreward Sections (rigth)"></div>    
             </div> -->
           </div>
+          <div></div>
           <!-- <input
             type="text"
             placeholder="First Name"

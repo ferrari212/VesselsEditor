@@ -5,73 +5,113 @@ import { Ship } from "../../libs/vessel.module.min.js"
 import { Ship3D } from "../../libs/3D_engine/Ship3D.js"
 import { showMessage } from "./supportFunctions.js";
 
+const halfBreadths = wigley_formula()
+
 const toggleClass = (classList, addClass, removeClass) => {
     classList.remove(removeClass)
     classList.add(addClass)
 }
 
+function multiplyArray(arr, multiplier) {
+    return arr.map(element => 
+        Array.isArray(element) ? multiplyArray(element, multiplier) : element * multiplier
+    );
+}
 
-const plotFuntion = (halfBreadths) => {
+const plotFunction = (halfBreadths, L, B, T) => {
 
-    // const data = [
-    //     {
-    //         x: [1, 2, 3, 4],
-    //         y: [10, 15, 13, 17],
-    //         mode: 'scatter',
-    //         // mode: 'lines',
-    //         line: {width: 3, shape: 'spline'}
-    //     }
-    // ]
-    const data = []
-    const stations = halfBreadths.stations
+    const data_waterlines = []
+    const data_station = []
+    
+    const stations = multiplyArray(halfBreadths.stations, L)
+    const table = multiplyArray(halfBreadths.table, B/2)
+    const waterlines = multiplyArray(halfBreadths.waterlines, T)
 
     // Middle index for returning in negative position for visualization purpose
     const middleIndex = Math.floor(stations.length / 2); 
 
-    stations.forEach((station, i) => {
+    // Plotting Water Lines
+    table.forEach( (t, i) => {
 
-        const multiplier = middleIndex > i ? 1 : -1
-
-        data.push(
+        data_waterlines.push(
             {
-                x: halfBreadths.table.map(t => {return multiplier * t[i]}),
-                y: halfBreadths.waterlines,
-                name: station.toString(),
+                x: stations,
+                y: t,
+                name: waterlines[i].toString(),
                 mode: 'scatter',
                 line: {shape: 'spline'}
             }
         )
     })
 
-    var layout = {
-        title: "Frames",
-        width: 500,
-        height: 500,
-        xaxis: {
-          title: 'Y (m)',
-          showgrid: true,
-          zeroline: true,
-          range: [-1, 1]
-        },
-        yaxis: {
-          title: 'Z (m)',
-          showline: true,
-          scaleanchor: 'x',
-          scaleratio: 1
-        },
-        legend: {
-            title: {
-                text: 'X (m)'
+    // Plotting stations
+    stations.forEach((station, i) => {
+
+        const multiplier = middleIndex > i ? 1 : -1
+
+        data_station.push(
+            {
+                x: table.map(t => {return multiplier * t[i]}),
+                y: waterlines,
+                name: station.toString(),
+                mode: 'scatter',
+                line: {shape: 'spline'}
             }
-        }
-    }
+        )
+    })   
 
     const plotConfig = {
         modeBarButtonsToRemove: ["zoom2d", "pan2d", "lasso2d", "zoomIn2d", "zoomOut2d", "resetScale2d"]
     }
 
-
-    Plotly.newPlot("plots", data, layout, plotConfig)
+    Plotly.newPlot("plots_waterline", data_waterlines, 
+        {
+            title: "Waterlines",
+            width: 1000,
+            // height: 300,
+            xaxis: {
+                title: 'X (m)',
+                showgrid: true,
+                zeroline: false,
+                range: [0, L]
+            },
+            yaxis: {
+                title: 'Y (m)',
+                showline: true,
+                // scaleanchor: 'x',
+                // scaleratio: 1
+            },
+            legend: {
+                title: {
+                    text: 'Z (m)'
+                }
+            }
+        }, plotConfig)
+    
+    Plotly.newPlot("plots_station", data_station, 
+        {
+            title: "Frames",
+            width: 750,
+            height: 750,
+            xaxis: {
+                title: 'Y (m)',
+                showgrid: true,
+                zeroline: true,
+                range: [-B/2, B/2]
+            },
+            yaxis: {
+                title: 'Z (m)',
+                showline: true,
+                scaleanchor: 'x',
+                scaleratio: 1,
+                range: [0, T]
+            },
+            legend: {
+                title: {
+                    text: 'X (m)'
+                }
+            }
+        }, plotConfig)
     
 }
 
@@ -79,11 +119,8 @@ document.getElementById('openForm').addEventListener('click', function() {
     const overlayElement = document.getElementById('overlay');
     const classList = overlayElement.classList
     
-    const halfBreadths = wigley_formula(100, 5, 7)
-
-    plotFuntion(halfBreadths)
-
-    console.log(halfBreadths);
+    read_inputs_values()
+    plotFunction(halfBreadths, 100, 5, 2)
 
     classList.contains("hidden") ? toggleClass(classList, "block", "hidden") : toggleClass(classList, "hidden", "block")
 
@@ -100,7 +137,7 @@ document.getElementById('submitForm').addEventListener('click', function() {
         // email: form.querySelector('input[placeholder="Email"]').value,
     };
     
-    const halfBreadths = wigley_formula(100, 5, 7)
+    const halfBreadths = wigley_formula()
     
     // setting up the stateDb parameters
     stateDb.baseObjects = [{}]
@@ -131,60 +168,54 @@ document.getElementById('submitForm').addEventListener('click', function() {
 
 });
 
+// Change element Parameter
+function onChangeElement (e) {
+
+    const queryString = `input[name="${e.name}"].text_input`
+        
+    document.querySelector(queryString).value = slideElement.value
+}
+
+
 // First guess of the ship main dimensions according to the input table
-function first_guess() {
+function read_inputs_values() {
     
     const vessel_parameters_guess = {};
 
-    vessel_parameters_guess.Length_OA = parseFloat(document.getElementById("slide_length_oa_first_guess").value)
-    document.getElementById("length_oa_first_guess").value = vessel_parameters_guess.Length_OA
-    vessel_parameters_guess.Breadth = parseFloat(document.getElementById("slide_breadth_first_guess").value)
-    document.getElementById("breadth_first_guess").value = vessel_parameters_guess.Breadth
-    vessel_parameters_guess.Depth = parseFloat(document.getElementById("slide_depth_first_guess").value)
-    document.getElementById("depth_first_guess").value = vessel_parameters_guess.Depth 
-    vessel_parameters_guess.Draft = parseFloat(document.getElementById("slide_draft_first_guess").value)
-    document.getElementById("draft_first_guess").value = vessel_parameters_guess.Draft 
-    vessel_parameters_guess.Displacement = parseFloat(document.getElementById("slide_displacement_first_guess").value)
-    document.getElementById("displacement_first_guess").value = vessel_parameters_guess.Displacement
-    vessel_parameters_guess.Length_WL = vessel_parameters_guess.Length_OA; 
-    
-    // Length related variables
-    vessel_parameters_guess.Length_Deck = Math.round(Math.round(10*vessel_parameters_guess.Length_OA*0.97)/10) + 0.5
-    vessel_parameters_guess.Length_Aft = Math.round(Math.round(10*vessel_parameters_guess.Length_OA*0.41)/10) + 0.5
-    vessel_parameters_guess.Length_Fore = Math.round(Math.round(10*vessel_parameters_guess.Length_OA*0.40)/10) + 0.5
-    vessel_parameters_guess.Bow_a = Math.round(10*vessel_parameters_guess.Length_OA*0.09)/10
+    const slideElements = [...document.getElementsByClassName("slide_input")]
 
-    // Breadth related variables
-    vessel_parameters_guess.B_transom = Math.round(10*vessel_parameters_guess.Breadth*0.65)/10
-    vessel_parameters_guess.Cb = Math.round(100*vessel_parameters_guess.Displacement/(vessel_parameters_guess.Length_WL*vessel_parameters_guess.Breadth*vessel_parameters_guess.Draft))/100
-    vessel_parameters_guess.Cp = vessel_parameters_guess.Cb + 0.02
+
+    slideElements.forEach((slideElement) => {
+        vessel_parameters_guess[slideElement.name] = slideElement.value
+
+        
+
+    })
+
+    // TODO: Eliminate this by looping through children, insert a loop that will take the elements and modify accordingly
+    // vessel_parameters_guess.Length_OA = parseFloat(document.getElementById("slide_length_oa_first_guess").value)
+    // document.getElementById("length_oa_first_guess").value = vessel_parameters_guess.Length_OA
+    // vessel_parameters_guess.Breadth = parseFloat(document.getElementById("slide_breadth_first_guess").value)
+    // document.getElementById("breadth_first_guess").value = vessel_parameters_guess.Breadth
+    // vessel_parameters_guess.Depth = parseFloat(document.getElementById("slide_depth_first_guess").value)
+    // document.getElementById("depth_first_guess").value = vessel_parameters_guess.Depth 
+    // vessel_parameters_guess.Draft = parseFloat(document.getElementById("slide_draft_first_guess").value)
+    // document.getElementById("draft_first_guess").value = vessel_parameters_guess.Draft 
+    // vessel_parameters_guess.Displacement = parseFloat(document.getElementById("slide_displacement_first_guess").value)
+    // document.getElementById("displacement_first_guess").value = vessel_parameters_guess.Displacement
+    // vessel_parameters_guess.Length_WL = vessel_parameters_guess.Length_OA; 
     
-    // Derived parameters
-    vessel_parameters_guess.Upturn = Math.round(vessel_parameters_guess.Length_Aft*0.50)
-    vessel_parameters_guess.Depth_Transom = Math.round(10*vessel_parameters_guess.Depth*0.25)/10
-    vessel_parameters_guess.H_Propeller = Math.round(10*vessel_parameters_guess.Depth*0.33)/10
-    
-    // Constants attributes
-    vessel_parameters_guess.Cwl = 0.9
-    vessel_parameters_guess.Area_Ratio = 0.15
-    vessel_parameters_guess.LCB = 0
-    vessel_parameters_guess.LCF = -5
-    vessel_parameters_guess.Entrance_t = 3
-    vessel_parameters_guess.Exit_t = 56
-    vessel_parameters_guess.alphaR_wl = 0.6
-    vessel_parameters_guess.alphaE_wl = 0.5
-    vessel_parameters_guess.alphaE_DECK = 0.07
-    vessel_parameters_guess.alphaE_deck = 110;
-    vessel_parameters_guess.Entrance_Angle = 48
-    vessel_parameters_guess.Exit_Angle = 35
+    // [...document.getElementsByClassName("first_guess")].forEach(e => {return e})
+
+    console.log(vessel_parameters_guess);
 
     return
 
 }
 const first_guess_elements = [...document.getElementsByClassName("first_guess")]
-first_guess_elements.forEach(input => input.addEventListener('input', first_guess));
+first_guess_elements.forEach(input => input.addEventListener('input', read_inputs_values));
 
-function wigley_formula(L, B, T) {
+function wigley_formula() {
     /*
     This is a partial and simplified approach to the water lines using
     the simplified wigley formulas.
