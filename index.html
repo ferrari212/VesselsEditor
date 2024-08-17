@@ -42,12 +42,13 @@
     </style>
   </head>
   <body>
-    <div id="block-interface" class="flex 2xl:flex-col p-4 space-x-2.5 space-y-2.5">
-      <div
+    <div
         id="errorContainer"
-        class="fixed bottom-10 left-1/2 transform -translate-x-1/2 space-y-2"
+        class="fixed bottom-10 left-1/2 transform -translate-x-1/2 space-y-2 z-50"
       ></div>
-
+    <div id="block-interface" class="flex 2xl:flex-col p-4 space-x-2.5 space-y-2.5">
+      
+      <div></div>
       <button
         id="create-block"
         class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-2.5"
@@ -135,7 +136,7 @@
     <div id="canvas"></div>
 
     <!-- Hull form input -->
-    <div id="overlay" class="absolute top-0 left-0 z-40 w-full h-full hidden">
+    <div id="overlay" class="absolute top-0 left-0 z-30 w-full h-full hidden">
       <div class="bg-white p-5 rounded-lg shadow-lg m-10">
         <form id="dataForm" class="grid grid-cols-12 gap-4">
           <!-- Form fields go here -->
@@ -146,11 +147,11 @@
                 style="cursor: pointer"
                 title="The length of the ship measured from the extreme forward end to the aftermost point of the stern, in meters."
               >
-                Length Overall :
+                Length Overall:
                 <input
                   type="text"
-                  class="text_input"
-                  value="100"
+                  class="text_input_LOA"
+                  value="22.5"
                   style="position: absolute; left: 210px; width: 50px"
                   name="LOA"
                   disabled
@@ -158,10 +159,10 @@
                 <input
                   type="range"
                   class="slide_input"
-                  min="60"
-                  value="100"
-                  max="140"
-                  step="0.5"
+                  min="10"
+                  value="22.5"
+                  max="240"
+                  step="0.1"
                   style="
                     position: absolute;
                     left: 275px;
@@ -175,11 +176,11 @@
                 style="cursor: pointer"
                 title="The maximum width of the ship, in meters."
               >
-                Breadth :
+                Breadth:
                 <input
                   type="text"
-                  class="text_input"
-                  value="14"
+                  class="text_input_Breadth"
+                  value="10"
                   style="position: absolute; left: 210px; width: 50px"
                   class="text_input"
                   name="Breadth"
@@ -188,9 +189,9 @@
                 <input
                   type="range"
                   class="slide_input"
-                  min="10"
-                  value="14"
-                  max="18"
+                  min="8"
+                  value="10"
+                  max="30"
                   step="0.1"
                   style="
                     position: absolute;
@@ -205,11 +206,11 @@
                 style="cursor: pointer"
                 title="The depth of the ship's keel below the main deck, in meters."
               >
-                Depth :
+                Depth:
                 <input
                   type="text"
-                  class="text_input"
-                  value="8.2"
+                  class="text_input_Depth"
+                  value="4.5"
                   style="position: absolute; left: 210px; width: 50px"
                   class="first_guess"
                   name="Depth"
@@ -218,9 +219,9 @@
                 <input
                   type="range"
                   class="slide_input"
-                  min="4"
-                  value="8.2"
-                  max="14"
+                  min="2"
+                  value="4.5"
+                  max="20"
                   step="0.1"
                   style="
                     position: absolute;
@@ -235,11 +236,11 @@
                 style="cursor: pointer"
                 title="The depth of the vessel's keel below the waterline, in meters."
               >
-                Draft :
+                Draft:
                 <input
                   type="text"
-                  class="text_input"
-                  value="4.5"
+                  class="text_input_Draft"
+                  value="2.5"
                   style="position: absolute; left: 210px; width: 50px"
                   class="first_guess"
                   name="Draft"
@@ -249,7 +250,7 @@
                   type="range"
                   class="slide_input"
                   min="4"
-                  value="4.5"
+                  value="2.5"
                   max="10"
                   step="0.1"
                   style="
@@ -265,11 +266,11 @@
                 style="cursor: pointer"
                 title="The vessel displaced volume, in cubic meters."
               >
-                Displacement :
+                Displacement:
                 <input
                   type="text"
-                  class="text_input"
-                  value="4506"
+                  class="text_input_Displacement"
+                  value="500"
                   style="position: absolute; left: 210px; width: 50px"
                   name="Displacement"
                   disabled
@@ -277,8 +278,8 @@
                 <input
                   type="range"
                   class="slide_input"
-                  min="4000"
-                  value="4506"
+                  min="100"
+                  value="500"
                   max="14000"
                   step="1"
                   style="
@@ -304,96 +305,13 @@
                   style="cursor: pointer"
                   title="Length Overall-Breadth ratio."
                 >
-                  <div class="flex space-x-4">
-                    <div>L/B:</div>
-                    <input
-                      type="text"
-                      value="6"
-                      id="L_B_guess_L"
-                      class="w-8"
-                      disabled
-                    />
-                  <div>&le;</div>
-                  <input
-                      type="text"
-                      value="6"
-                      id="L_B_guess_L"
-                      class="w-8"
-                      disabled
-                    />
-                    <div>&le;</div>
-                    <input
-                      type="text"
-                      value="6"
-                      id="L_B_guess_L"
-                      class="w-8"
-                      disabled
-                    />                   
-                  </div>
-                </p>
-                <p style="cursor: pointer" title="Length Overall-Depth ratio.">
-                  <div class="flex space-x-4">
-                    <div>L/D:</div>
-                    <input
-                      type="text"
-                      value="12"
-                      id="L_D_guess_L"
-                      class="w-8"
-                      disabled
-                    />
-                    <div>&le;</div>
-                    <input
-                      type="text"
-                      value="00"
-                      class="w-8"
-                      id="L_D_guess"
-                      disabled
-                    />
-                    <div>&le;</div>
-                    <input
-                      type="text"
-                      value="14"
-                      id="L_D_guess_U"
-                      class="w-8"
-                      disabled
-                    />
-                  </div>
-                </p>
-                <p style="cursor: pointer" title="Breadth-Depth ratio.">
-                  <div class="flex space-x-4">
-                    <div>B/D:</div>
-                    <input
-                      type="text"
-                      value="1.5"
-                      id="B_D_guess_L"
-                      class="w-8"
-                      disabled
-                    />
-                    <div>&le;</div>
-                    <input
-                      type="text"
-                      value="0.0"
-                      id="B_D_guess"
-                      class="w-8"
-                      disabled
-                    />
-                    <div>&le;</div>
-                    <input
-                      type="text"
-                      value="2.5"
-                      id="B_D_guess_U"
-                      class="w-8"
-                      disabled
-                    />
-                  </div>
-                </p>
                 <p style="cursor: pointer" title="Draft-Depth ratio.">
                   <div class="flex space-x-4">
                     <div>T/D:</div>
                     <input
+                      id="T_D"
                       type="text"
-                      value="0.5"
-                      id="T_D_guess_L"
+                      value="0.1"
                       class="w-8"
                       disabled
                     />
@@ -401,15 +319,14 @@
                     <input
                       type="text"
                       value="0.0"
-                      id="T_D_guess"
+                      id="T_D_restriction"
                       class="w-8"
                       disabled
                     />
                     <div>&le;</div>
                     <input
                       type="text"
-                      value="0.6"
-                      id="T_D_guess_U"
+                      value="1.0"
                       class="w-8"
                       disabled
                     />
@@ -423,8 +340,7 @@
                   <div>C<sub>B</sub>:</div>
                   <input
                     type="text"
-                    value="0.70"
-                    id="Cb_guess_L"
+                    value="0.3"
                     class="w-8"
                     disabled
                   />
@@ -432,15 +348,14 @@
                   <input
                     type="text"
                     value="0.00"
-                    id="Cb_guess"
+                    id="Cb_restriction"
                     class="w-8"
                     disabled
                   />
                   <div>&le;</div>
                   <input
                     type="text"
-                    value="0.75"
-                    id="Cb_guess_U"
+                    value="0.8"
                     class="w-8"
                     disabled
                   />

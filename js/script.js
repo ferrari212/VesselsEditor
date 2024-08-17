@@ -204,7 +204,7 @@ function onMouseDoubleClick (event) {
         
         elementClicked = intersected.name
         const element = zUpCont.getObjectByName(elementClicked)
-
+        debugger
         assignColorToComponent(colorBox, element.currentHex)
 
         selectedName.value = elementClicked
@@ -306,6 +306,7 @@ document.getElementById('delete-block').addEventListener('click', () => {
     // Maintain the derived objects that does not have the same element clicked
     stateDb.baseObjects = stateDb.baseObjects.filter(obj => obj.id != elementClicked)
     stateDb.derivedObjects = stateDb.derivedObjects.filter(obj => obj.id != elementClicked)
+
     // Add once again the Ship3D in the zUpCont
     zUpCont.add(ship3D);
 
@@ -355,9 +356,6 @@ function changeTankColor (valueString, elementClickedName) {
         assignColorToComponent(colorBox, valueString)
     
     }
-
-    
-    
 
 }
 

@@ -119,8 +119,13 @@ document.getElementById('openForm').addEventListener('click', function() {
     const overlayElement = document.getElementById('overlay');
     const classList = overlayElement.classList
     
-    read_inputs_values()
-    plotFunction(halfBreadths, 100, 5, 2)
+    const initial_dimensions = read_inputs_values()
+    plotFunction(
+                halfBreadths, 
+                initial_dimensions.LOA, 
+                initial_dimensions.Breadth, 
+                initial_dimensions.Draft
+            )
 
     classList.contains("hidden") ? toggleClass(classList, "block", "hidden") : toggleClass(classList, "hidden", "block")
 
@@ -171,24 +176,69 @@ document.getElementById('submitForm').addEventListener('click', function() {
 // Change element Parameter
 function onChangeElement (e) {
 
-    const queryString = `input[name="${e.name}"].text_input`
-        
-    document.querySelector(queryString).value = slideElement.value
+    const queryString = "text_input_" + e.target.name
+    
+    document.getElementsByClassName(queryString)[0].value = e.target.value
+
+    verifyRestrictionOnElements([...document.getElementsByClassName("slide_input")])
+
 }
 
+// Verify restrictions on the elements
+function verifyRestrictionOnElements (elements) {
+
+    const vessel_parameters = getElementsParameters(elements)
+
+    const {Breadth, Depth, Displacement, Draft, LOA} = vessel_parameters
+    
+    
+    const ratio_T_D = Draft / Depth
+    const calc_Cb = Displacement / (Draft * Breadth * LOA)
+
+    const T_D_restriction_element = document.getElementById("T_D_restriction")
+    const Cb_restriction_element = document.getElementById("Cb_restriction")
+
+    T_D_restriction_element.value = ratio_T_D.toFixed(2)
+    Cb_restriction_element.value = calc_Cb.toFixed(2)
+    
+    if (ratio_T_D < 0.1 || ratio_T_D > 1.0) {
+
+        showMessage({errorMessageText: `T/D = ${ratio_T_D.toFixed(3)} does not match restriction`})
+
+    }
+
+    if (calc_Cb < 0.3 || calc_Cb > 0.8) {
+
+        showMessage({errorMessageText: `Cb = ${calc_Cb.toFixed(3)} does not match restriction`})
+
+    }
+
+}
+
+function getElementsParameters (elements) {
+
+    let vessel_parameters = {}
+
+    elements.forEach((element) => {
+        vessel_parameters[element.name] = element.value
+    })
+
+    return vessel_parameters
+}
 
 // First guess of the ship main dimensions according to the input table
 function read_inputs_values() {
     
-    const vessel_parameters_guess = {};
-
     const slideElements = [...document.getElementsByClassName("slide_input")]
+    const vessel_parameters_guess = getElementsParameters(slideElements);
 
+    // Verify elements for the first time when the form is opened
+    verifyRestrictionOnElements (slideElements)
 
     slideElements.forEach((slideElement) => {
-        vessel_parameters_guess[slideElement.name] = slideElement.value
 
-        
+        // This function assign the element slider to all the other elements 
+        slideElement.addEventListener("change", (e) => {onChangeElement(e)})
 
     })
 
@@ -207,18 +257,25 @@ function read_inputs_values() {
     
     // [...document.getElementsByClassName("first_guess")].forEach(e => {return e})
 
-    console.log(vessel_parameters_guess);
-
-    return
+    return vessel_parameters_guess
 
 }
+
+[...document.getElementsByClassName("slide_input")].forEach((slideElement) => {
+    
+    slideElement.addEventListener("change", (event) => {
+
+    })
+
+})
+
 const first_guess_elements = [...document.getElementsByClassName("first_guess")]
 first_guess_elements.forEach(input => input.addEventListener('input', read_inputs_values));
 
 function wigley_formula() {
     /*
     This is a partial and simplified approach to the water lines using
-    the simplified wigley formulas.
+    the wrigley formulas.
     The main goal is to use the Tiago formula in: http://shiplab.hials.org/app/shiplines/
     However, this application would require more effort due to complex of the formulas used
     
